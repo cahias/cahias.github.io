@@ -6,4 +6,27 @@
     <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
 ]]></content>
   </entry>
+  <entry>
+    <title>拉格朗日插值法与Shamir门限密码</title>
+    <url>/2025/08/21/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%8F%92%E5%80%BC%E6%B3%95%E4%B8%8EShamir%E9%97%A8%E9%99%90%E5%AF%86%E7%A0%81/</url>
+    <content><![CDATA[<p>在中学阶段我们常会听老师说起这样一个定理：<strong>n个点值确定唯一的n-1次多项式函数</strong>。而如何确定该多项式函数？我们会使用解线性方程组的方法。<br><span id="more"></span><br>在中学阶段，我们学到的确定多项式函数的方法往往是这样的：</p>
+<ol>
+<li>已知有$n$个点，确定$n-1$次多项式函数</li>
+<li>将$n$个点分别带入形如$y=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的式子</li>
+<li>联立这些个方程，解出每一项的系数$a_{i}$<h1 id="拉格朗日插值法"><a href="#拉格朗日插值法" class="headerlink" title="拉格朗日插值法"></a>拉格朗日插值法</h1>联立方程求解虽然很强势，但这还是太吃操作了，那有没有在计算机上更简单粗暴的办法呢？有的，兄弟，有的。拉格朗日插值法就是这样的一个方法，他不需要消元等任何复杂的操作，只需要把数往里一代就行了。<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2>拉格朗日插值法的核心思路也很简单粗暴：利用点值的可加性$(f+g)(x_{i})=f(x_{i})+g(x_{i})$。看上去可能不太明白在说什么，举个例子就清楚了。<br>对于一个多项式函数$f(x)=x^2$和一个多项式函数$g(x)=2x+1$，那么就有$(f+g)(x)=x^{2}+2x+1$。我们考虑他们在取值为$x=1,2,3$的时候，分别有：<script type="math/tex; mode=display">\begin{aligned}
+&f(1,2,3)=(1,4,9)\\
+&g(1,2,3)=(3,5,7)\\
+&(f+g)(1,2,3)=(4,9,16)
+\end{aligned}</script>显然有$(1,4,9)+(3,5,7)=(4,9,16)$也就是$(f+g)(x_{i})=f(x_{i})+g(x_{i})$<h2 id="思路及推导"><a href="#思路及推导" class="headerlink" title="思路及推导"></a>思路及推导</h2>既然可以有点值的可加性这样的性质，拉格朗日就有想法了：如果我有$n$个多项式$f_{i}(x)$，对于每个多项式函数$f_{i}(x)$只在$x_{i}$的时候取值$y_{i}$，其他的时候取值为0（也就是$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$）。再把这$n$个多项式函数依据点的可加性加起来，不就能得到$n$个形如$(x_{i},y_{i})$的点所确定的多项式函数了吗？（天才的想法）<br>于是说干就干，为了找到$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$这样的函数呢，首先我们得确保$f_{i}(x_{j})=0(i\not=j)$，所以$f_{i}(x)$应该要包含其余所有的$x-x_{j}$作为因式，我们把他们乘起来就有$g_{i}(x)=\prod_{j\not=i}(x-x_{j})$。但这个时候取值为$x_{i}$时，很明显$g_{i}(x_{i})=\prod_{j\not=i}(x_{i}-x_{j})$不一定等于$y_{i}$，所以为了让$f_{i}(x_{i})=y_{i}$我们得乘上一个$\frac{y_{i}}{g_{i}(x_{i})}$。所以：<script type="math/tex; mode=display">f_{i}(x)=g_{i}(x)\cdot \frac{y_{i}}{g_{i}(x_{i})}=y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script>最后对$f_{i}(x)$求和得到$f(x)$，也就是拉格朗日插值公式：<script type="math/tex; mode=display">f(x)=\sum_{i=1}^{n}y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script>如何直接获取$f(x)=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的系数呢？我们继续往下推导。首先要明确的是，每个$L_{i}(x)=\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}$本质上就是一个次数为$n$的多项式，其中分母是常数，分子是$(x-x_{1})(x-x_{2})\dots(x-x_{n})$。所以可以展开成：<script type="math/tex; mode=display">L_{i}(x)=\frac{1}{\prod_{j\not=i(x_{i}-x_{j})}}\cdot (c_{i_{1}}x^{n-1}+c_{i_{2}}x^{n-2}+\dots+c_{i_{n-1}}x+c_{i_{n}})</script>由$f(x)=\sum_{i=1}^{n}y_{i}L_{i}(x)$最终可知其中系数：<script type="math/tex; mode=display">a_{k}=\sum_{i=1}^{n}{\frac{y_{i}c_{i_{k}}}{\prod_{j\not=i(x_{i}-x_{j})}}}</script></li>
+</ol>
+<h1 id="Shamir"><a href="#Shamir" class="headerlink" title="Shamir"></a>Shamir</h1><p>持续更新中….</p>
+]]></content>
+      <categories>
+        <category>crypto</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>writeup</tag>
+      </tags>
+  </entry>
 </search>
