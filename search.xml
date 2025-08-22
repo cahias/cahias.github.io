@@ -1,25 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>I‘m back</title>
-    <url>/2025/05/21/I%E2%80%98m%20back/</url>
-    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>拉格朗日插值法与Shamir门限密码</title>
-    <url>/2025/08/21/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%8F%92%E5%80%BC%E6%B3%95%E4%B8%8EShamir%E9%97%A8%E9%99%90%E5%AF%86%E7%A0%81/</url>
+    <title>拉格朗日插值法、傅立叶变换与Shamir门限密码</title>
+    <url>/2025/08/21/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%8F%92%E5%80%BC%E6%B3%95%E3%80%81%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2%E4%B8%8EShamir%E9%97%A8%E9%99%90%E5%AF%86%E7%A0%81/</url>
     <content><![CDATA[<p>在中学阶段我们常会听老师说起这样一个定理：<strong>n个点值确定唯一的n-1次多项式函数</strong>。而如何确定该多项式函数？我们会使用解线性方程组的方法。<br><span id="more"></span><br>在中学阶段，我们学到的确定多项式函数的方法往往是这样的：</p>
 <ol>
 <li>已知有$n$个点，确定$n-1$次多项式函数</li>
 <li>将$n$个点分别带入形如$y=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的式子</li>
-<li>联立这些个方程，解出每一项的系数$a_{i}$<h1 id="拉格朗日插值法"><a href="#拉格朗日插值法" class="headerlink" title="拉格朗日插值法"></a>拉格朗日插值法</h1>联立方程求解虽然很强势，但这还是太吃操作了，那有没有在计算机上更简单粗暴的办法呢？有的，兄弟，有的。拉格朗日插值法就是这样的一个方法，他不需要消元等任何复杂的操作，只需要把数往里一代就行了。<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2>拉格朗日插值法的核心思路也很简单粗暴：利用点值的可加性$(f+g)(x_{i})=f(x_{i})+g(x_{i})$。看上去可能不太明白在说什么，举个例子就清楚了。<br>对于一个多项式函数$f(x)=x^2$和一个多项式函数$g(x)=2x+1$，那么就有$(f+g)(x)=x^{2}+2x+1$。我们考虑他们在取值为$x=1,2,3$的时候，分别有：<script type="math/tex; mode=display">\begin{aligned}
+<li>联立这些个方程，解出每一项的系数$a_{i}$</li>
+</ol>
+<h1 id="拉格朗日插值法"><a href="#拉格朗日插值法" class="headerlink" title="拉格朗日插值法"></a>拉格朗日插值法</h1><p>联立方程求解虽然很强势，但这还是太吃操作了，那有没有在计算机上更简单粗暴的办法呢？有的，兄弟，有的。拉格朗日插值法就是这样的一个方法，他不需要消元等任何复杂的操作，只需要把数往里一代就行了。</p>
+<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><p>拉格朗日插值法的核心思路也很简单粗暴：利用点值的可加性$(f+g)(x_{i})=f(x_{i})+g(x_{i})$。看上去可能不太明白在说什么，举个例子就清楚了。<br>对于一个多项式函数$f(x)=x^2$和一个多项式函数$g(x)=2x+1$，那么就有$(f+g)(x)=x^{2}+2x+1$。我们考虑他们在取值为$x=1,2,3$的时候，分别有：</p>
+<script type="math/tex; mode=display">\begin{aligned}
 &f(1,2,3)=(1,4,9)\\
 &g(1,2,3)=(3,5,7)\\
 &(f+g)(1,2,3)=(4,9,16)
-\end{aligned}</script>显然有$(1,4,9)+(3,5,7)=(4,9,16)$也就是$(f+g)(x_{i})=f(x_{i})+g(x_{i})$<h2 id="思路及推导"><a href="#思路及推导" class="headerlink" title="思路及推导"></a>思路及推导</h2>既然可以有点值的可加性这样的性质，拉格朗日就有想法了：如果我有$n$个多项式$f_{i}(x)$，对于每个多项式函数$f_{i}(x)$只在$x_{i}$的时候取值$y_{i}$，其他的时候取值为0（也就是$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$）。再把这$n$个多项式函数依据点的可加性加起来，不就能得到$n$个形如$(x_{i},y_{i})$的点所确定的多项式函数了吗？（天才的想法）<br>于是说干就干，为了找到$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$这样的函数呢，首先我们得确保$f_{i}(x_{j})=0(i\not=j)$，所以$f_{i}(x)$应该要包含其余所有的$x-x_{j}$作为因式，我们把他们乘起来就有$g_{i}(x)=\prod_{j\not=i}(x-x_{j})$。但这个时候取值为$x_{i}$时，很明显$g_{i}(x_{i})=\prod_{j\not=i}(x_{i}-x_{j})$不一定等于$y_{i}$，所以为了让$f_{i}(x_{i})=y_{i}$我们得乘上一个$\frac{y_{i}}{g_{i}(x_{i})}$。所以：<script type="math/tex; mode=display">f_{i}(x)=g_{i}(x)\cdot \frac{y_{i}}{g_{i}(x_{i})}=y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script>最后对$f_{i}(x)$求和得到$f(x)$，也就是拉格朗日插值公式：<script type="math/tex; mode=display">f(x)=\sum_{i=1}^{n}y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script>如何直接获取$f(x)=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的系数呢？我们继续往下推导。首先要明确的是，每个$L_{i}(x)=\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}$本质上就是一个次数为$n$的多项式，其中分母是常数，分子是$(x-x_{1})(x-x_{2})\dots(x-x_{n})$。所以可以展开成：<script type="math/tex; mode=display">L_{i}(x)=\frac{1}{\prod_{j\not=i(x_{i}-x_{j})}}\cdot (c_{i_{1}}x^{n-1}+c_{i_{2}}x^{n-2}+\dots+c_{i_{n-1}}x+c_{i_{n}})</script>由$f(x)=\sum_{i=1}^{n}y_{i}L_{i}(x)$最终可知其中系数：<script type="math/tex; mode=display">a_{k}=\sum_{i=1}^{n}{\frac{y_{i}c_{i_{k}}}{\prod_{j\not=i(x_{i}-x_{j})}}}</script></li>
+\end{aligned}</script><p>显然有$(1,4,9)+(3,5,7)=(4,9,16)$也就是$(f+g)(x_{i})=f(x_{i})+g(x_{i})$</p>
+<h2 id="思路及推导"><a href="#思路及推导" class="headerlink" title="思路及推导"></a>思路及推导</h2><p>既然可以有点值的可加性这样的性质，拉格朗日就有想法了：如果我有个多项式$f_{i}(x)$，对于每个多项式函数$f_{i}(x)$只在$x_{i}$的时候取值$y_{i}$，其他的时候取值为0（也就是$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$）。再把这个多项式函数依据点的可加性加起来，不就能得到个形如$(x_{i},y_{i})$的点所确定的多项式函数了吗？（天才的想法）</p>
+<p>于是说干就干，为了找到$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$这样的函数呢，首先我们得确保$f_{i}(x_{j})=0(i\not=j)$，所以$f_{i}(x)$应该要包含其余所有的$x-x_{j}$作为因式，我们把他们乘起来就有$g_{i}(x)=\prod_{j\not=i}(x-x_{j})$。但这个时候取值为$x_{i}$时，很明显$g_{i}(x_{i})=\prod_{j\not=i}(x_{i}-x_{j})$不一定等于$y_{i}$，所以为了让$f_{i}(x_{i})=y_{i}$我们得乘上一个$\frac{y_{i}}{g_{i}(x_{i})}$。所以：</p>
+<script type="math/tex; mode=display">f_{i}(x)=g_{i}(x)\cdot \frac{y_{i}}{g_{i}(x_{i})}=y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>最后对$f_{i}(x)$求和得到$f(x)$，也就是拉格朗日插值公式：</p>
+<script type="math/tex; mode=display">f(x)=\sum_{i=1}^{n}y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>如何直接获取$f(x)=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的系数呢？我们继续往下推导。首先要明确的是，每个$L_{i}(x)=\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}$本质上就是一个次数为$n$的多项式，其中分母是常数，分子是$(x-x_{1})(x-x_{2})\dots(x-x_{n})$。所以可以展开成：</p>
+<script type="math/tex; mode=display">L_{i}(x)=\frac{1}{\prod_{j\not=i(x_{i}-x_{j})}}\cdot (c_{i_{1}}x^{n-1}+c_{i_{2}}x^{n-2}+\dots+c_{i_{n-1}}x+c_{i_{n}})</script><p>由$f(x)=\sum_{i=1}^{n}y_{i}L_{i}(x)$最终可知其中系数：</p>
+<script type="math/tex; mode=display">a_{k}=\sum_{i=1}^{n}{\frac{y_{i}c_{i_{k}}}{\prod_{j\not=i(x_{i}-x_{j})}}}</script><h1 id="傅立叶变换"><a href="#傅立叶变换" class="headerlink" title="傅立叶变换"></a>傅立叶变换</h1><p>拉格朗日插值法虽然好用，但是时间复杂度为$O(n^{2})$，时间复杂度说不上高，但也不低。那我们想更进一步，就得拿出我们的核心加速工具：快速傅立叶变换。快速傅里叶变换即在离散傅里叶变换基础上通过选取合适的$x_{i}$​，使得可以快速求值。</p>
+<h2 id="离散傅立叶变换-DFT"><a href="#离散傅立叶变换-DFT" class="headerlink" title="离散傅立叶变换(DFT)"></a>离散傅立叶变换(DFT)</h2><p>在介绍快速傅立叶变换前得先介绍离散傅立叶变换：在信号处理与数值计算中，<strong>离散傅立叶变换（DFT, Discrete Fourier Transform）</strong> 是一个重要工具。给定长度为$N$的序列：$x=(x_{0},x_{1},\dots,x_{N-1})$</p>
+<p>其可以通过DFT转换成另一个长度为$N$的序列：$X_{k}=\sum_{n=0}^{N-1}x_{n}\omega_{N}^{kn},k={0,1,\dots,N-1}$（其中$\omega_{N}=e^{-{\frac{2\pi i}{N}}}$即为原始$N$次单位根）</p>
+<blockquote>
+<p> 在复数中，一个复数$\omega$如果满足$\omega^{N}=1$，则称其为$N$次单位根。所有$N$次单位根可以写成$\omega_{k}=e^{\frac{2\pi k}{N}},k=0,1,\dots,N-1$。这些解在复平面上<strong>均匀分布在单位圆上</strong>，相邻两个点之间夹角为$\frac{2\pi}{N}$。</p>
+<p> 若$\omega$为$N$次单位根，并且它的幂次$\omega,\omega^{2},\dots,\omega^{N-1}$恰好能够生成所有不同的$N$次单位根，则称$\omega$为原始$N$次单位根，常用的原始单位根是$\omega_{N}=e^{ \frac{2\pi i}{N} }$</p>
+</blockquote>
+<h2 id="快速傅立叶变换-FFT"><a href="#快速傅立叶变换-FFT" class="headerlink" title="快速傅立叶变换(FFT)"></a>快速傅立叶变换(FFT)</h2><p>说回如何快速计算，考虑任意多项式$f(x)=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}$有：</p>
+<script type="math/tex; mode=display">\begin{equation*}
+\begin{aligned}
+f(x)&=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}\\
+&=a_{0}+a_{2}x^{2}+a_{4}x^{4}+\dots+a_{n-2}x^{n-2}+a_{1}x+a_{3}x^{3}+a_{5}x^{5}+\dots+a_{n-1}x^{n-1}\\
+&=f_{e}(x)+f_{o}(x)
+\end{aligned}
+\end{equation*}</script><p>根据奇偶函数的性质，不难知道$f(-x)=f_{e}(x)-f_{o}(x)$。这意味着我们在计算一组$f_{e}(x),f_{o}(x)$后可以得到有$f(x)$和$f(-x)$两个点的值，但是$f_{e}(x),f_{o}(x)$的最高次项任然是$n-2,n-1$次，计算的时间复杂度并没有降低。这就需要下面的操作。</p>
+<p>对于$f_{e}(x)=a_{0}+a_{2}x^{2}+\dots+a_{n-2}x^{n-2}$来说，我们可以通过换元令$u=x^{2}$进行压缩，变为：$f_{e}^{‘}(u)=a_{0}+a_{2}u+\dots+a_{n-2}u^{\frac{n-2}{2}}$。同样，对于$f_{o}(x)$，我们只需先提出一个$x$，也可化成相同的形式。因此有：</p>
+<script type="math/tex; mode=display">\begin{cases}
+f(x)=f_{e}^{'}(x^{2})+xf_{o}^{'}(x^{2})\\ \\
+f(-x)=f_{e}^{'}(x^{2})-xf_{o}^{'}(x^{2})
+\end{cases}</script><p>要想在计算上节省代价，我们应当选择成对的点$(x,-x)$，这样在计算的时候可以共用同一组$f_{e}^{‘}(x^{2}),f_{o}^{‘}(x^{2})$，就成功将规模压缩成了原本的一半。<br>接下来所要考虑的是如何使它能够递归下去。如果我们一开始点集是$(x_{i},-x_{i})$，平方后就有：${x_{i}}^{2}=(-x_{i})^{2}$，也就是会“合并”为更小的点集，为保证能递归下去：</p>
+<ol>
+<li>有$n$个点，他们得两两配对。</li>
+<li>平方后要得到规模减半的点，依然能配对。</li>
+<li>…</li>
+<li>一直递归$\lceil \omega=\log_{2}n \rceil$层，最后缩减到1个点。</li>
 </ol>
-<h1 id="Shamir"><a href="#Shamir" class="headerlink" title="Shamir"></a>Shamir</h1><p>持续更新中….</p>
+<p>为了让选择的点集在平方运算下仍然落在同类的点集里，且也能两两配对，一种自然且常用的选择是：把初始点选为某个$k$-次单位根集合，且令$k=2^{\omega}$，具体则是令$\omega_{k}^{j}=e^{-{\frac{2\pi i}{k}}},x\in\{\omega_{k}^{0},\omega_{k}^{1},\dots,\omega_{k}^{k-1}\}$则有$(\omega_{k}^{j})^{2}=\omega_{\frac{k}{2}}^{j},\left( \omega_{\frac{k}{2}}^{j} \right)^{2}=\omega_{\frac{k}{4}}^{j},\dots$直到$\omega_{1}^{j}=1$。<br>这个时候我们再回头考虑成对点$(x_{i},-x_{i})$，由于其为$k$-次单位根，所以可以写成$\left( \omega_{k}^{j},\omega_{k}^{j+{\frac{k}{2}}} \right)$，此时有：</p>
+<script type="math/tex; mode=display">\begin{cases}
+f(\omega_{k}^{j})=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)+\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)\\ \\
+f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)-\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)
+\end{cases}</script><p>这正是FFT的<strong>蝴蝶变换</strong>。每一层递归都由若干个蝴蝶组成，层层叠加，最终完成$O(n\log n)$的快速计算。</p>
+<h1 id="Shamir"><a href="#Shamir" class="headerlink" title="Shamir"></a>Shamir</h1><p>shamir门限密码则是基于<strong>n个点值确定唯一的n-1次多项式函数</strong>的一种秘密共享方案。shamir共有两个参数$n,t$，也写作$(t,n)-\text{门限方案}$。$n$表示参与秘密分割的人数；$t$为门限值，表示至少$t$个参与者一起才能恢复秘密信息。</p>
+<h2 id="共享方案流程"><a href="#共享方案流程" class="headerlink" title="共享方案流程"></a>共享方案流程</h2><p>设有多项式$f(x)=a_{1}x^{t-1}+a_{2}x^{t-2}+\dots+a_{t-1}x+a_{t}\pmod{p}$，其中$p$为大质数，$f(0)=a_{t}=s$（$s$为要保护的秘密，且$s&lt;p$）</p>
+<ol>
+<li>秘密的拥有者先随机生成$t-1$个小于$p$的随机数$a_{1},a_{2},\dots,a_{t-1}$，并随机选取$n$个互不相同的整数$x_{1},x_{2},\dots,x_{n}$</li>
+<li>将$n$个点带入到多项式函数中，计算出$f(x_{i})$</li>
+<li>将计算得出的$n$个值分发给$n$个参与方，每个人获得$(x_{i},f(x_{i}))$</li>
+<li>销毁多项式$f(x)$<br>这样，根据定理可知至少得有$t$个人参与才能根据插值法得到所要的秘密。<br>持续更新中….</li>
+</ol>
 ]]></content>
       <categories>
         <category>crypto</category>
@@ -28,5 +68,11 @@
         <tag>学习</tag>
         <tag>writeup</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>I‘m back</title>
+    <url>/2025/05/21/I%E2%80%98m%20back/</url>
+    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
+]]></content>
   </entry>
 </search>
