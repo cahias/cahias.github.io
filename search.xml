@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>I‘m back</title>
-    <url>/2025/05/21/I%E2%80%98m%20back/</url>
-    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
-]]></content>
-      <tags>
-        <tag>生活</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Crypto常用工具篇</title>
     <url>/2025/08/25/Crypto%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E7%AF%87/</url>
     <content><![CDATA[<p>Crypto的工具太多啦，经常想不起来一些工具是怎么使用的，这里简单记录一下一些工具的使用。<br><span id="more"></span></p>
@@ -28,6 +19,15 @@
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>I‘m back</title>
+    <url>/2025/05/21/I%E2%80%98m%20back/</url>
+    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
+]]></content>
+      <tags>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -113,6 +113,24 @@ f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^
         <tag>学习</tag>
         <tag>Crypto</tag>
         <tag>拉格朗日</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>油醋签名系统</title>
+    <url>/2025/09/02/%E6%B2%B9%E9%86%8B%E7%AD%BE%E5%90%8D%E7%B3%BB%E7%BB%9F/</url>
+    <content><![CDATA[<p>今年碰到的关于油醋签名系统的题还挺多的，第一次听到油和醋的时候还感觉挺有趣的<del>（再加上盐可以做饭了）</del>。浅浅学习一下。<br><span id="more"></span></p>
+<h1 id="多变量密码"><a href="#多变量密码" class="headerlink" title="多变量密码"></a>多变量密码</h1><p>多变量密码是基于有限域$\mathbb{F}_{q}$上解多元二次方程组困难性（MQ问题）的公钥密码体制。下面描述一下MQ问题：<br>给定$F_{q}$中的多元二次方程组</p>
+<script type="math/tex; mode=display">f_{i}(\text{x})=\sum_{1\leq j,k\leq n}a_{j,k}^{(i)}x_{j}x_{k}+\sum_{j=1}^{n}b_{j,k}^{(i)}x_{j}+c^{(i)}</script><p>已知$\text{y}=(f_{1}(\text{x}),f_{2}(\text{x}),\dots,f_{m}(\text{x}))$，求解满足方程组的解$\text{x}’=(x_{1}’,x_{2}’,\dots,x_{n}’)$。</p>
+<p>多变量体制几乎都遵循一个统一的套路：$\mathcal{P}=\mathcal{S}\circ\mathcal{F}\circ\mathcal{T}$，其中$\mathcal{P}$为公钥，$(\mathcal{S},\mathcal{F},\mathcal{T})$为私钥。它核心则在于中心映射$\mathcal{F}:\mathbb{F}_{q}^n \to \mathbb{F}_{q}^{m},\mathcal{F}(\text{x})=(f_{1}(\text{x}),f_{2}(\text{x}),\dots,f_{m}(\text{x}))$，这里$\mathcal{F}$必须满足的一个条件就是$\mathcal{F}$的原像必须在计算上是容易找到的(也正因为$\mathcal{F}$存在某种这样的设计，所以多变量密码并非是provably secure)。$\mathcal{S},\mathcal{T}$则是两个随机可逆的线性映射，用于打乱多项式和变量对$\mathcal{F}$做混淆。这样对于公钥用户来说仅仅是看到经过混淆的$\mathcal{P}$，解$\mathcal{P}(\text{x})=y$是困难的。</p>
+<p>根据上面所述，签名步骤就很显而易见了：对文件$m$进行签名，计算$\mathcal{S}^{-1}(m)=y,\mathcal{F}^{-1}(y)=z,\mathcal{T}^{-1}(z)=\text{x}$，则$\text{x}$即为$m$的签名。对其进行验证只需检查$\mathcal{P}(\text{x})$是否等于$m$即可。</p>
+<h1 id="油醋签名系统"><a href="#油醋签名系统" class="headerlink" title="油醋签名系统"></a>油醋签名系统</h1><p>首先是定义：令$o,v$为正整数，$n=o+v$。$x_{1},x_{2},\dots,x_{v}$为醋变量，$x_{v+1},x_{v+2},\dots,x_{n}$为油变量。<br>其中心映射$\mathcal{F}:\mathbb{F}_{q}^{n}\to \mathbb{F}_{q}^{o},\mathcal{F}(x_{1},x_{2},\dots,x_{n})=(f_{1}(x_{1},x_{2},\dots,x_{n}),\dots,f_{o}(x_{1},x_{2},\dots,x_{n}))$。每个$f_{i}$都有：</p>
+<script type="math/tex; mode=display">f_{i}=\sum_{\substack{1\leq j\leq n\\1\leq k\leq v}}a_{j,k}^{(i)}x_{j}x_{k}+\sum_{1\leq j\leq n}c_{j}^{(i)}x_{j}+e^{(i)}</script><p>每一个$f_{i}$的二次项中都含有醋变量乘醋变量，醋变量乘油变量，但是不能含油变量乘油变量。这样的构造方便我们在给定$\text{z}=(z_{1},z_{2},\dots z_{n})$找到一个$z$的原像$\mathcal{F}^{-1}(\text{z})$。我们只需要随机给醋变量代入数值$x_{1}=\alpha_{1},x_{2}=\alpha_{2},\dots,x_{v}=\alpha_{v}$，这样整个系统就变成了一个含有$o$个油变量的$o$个方程的线性方程组（这也解释了为什么没有醋-醋项）。这样的方程大概率是有解的（如果没有解可以换一组）。</p>
+]]></content>
+      <categories>
+        <category>signature</category>
+      </categories>
+      <tags>
+        <tag>后量子密码</tag>
       </tags>
   </entry>
 </search>
