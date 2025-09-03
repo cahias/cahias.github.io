@@ -125,6 +125,10 @@ f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^
 <p>根据上面所述，签名步骤就很显而易见了：对文件$m$进行签名，计算$\mathcal{S}^{-1}(m)=y,\mathcal{F}^{-1}(y)=z,\mathcal{T}^{-1}(z)=\text{x}$，则$\text{x}$即为$m$的签名。对其进行验证只需检查$\mathcal{P}(\text{x})$是否等于$m$即可。</p>
 <h1 id="油醋签名系统"><a href="#油醋签名系统" class="headerlink" title="油醋签名系统"></a>油醋签名系统</h1><p>首先是定义：令$o,v$为正整数，$n=o+v$。$x_{1},x_{2},\dots,x_{v}$为醋变量，$x_{v+1},x_{v+2},\dots,x_{n}$为油变量。<br>其中心映射$\mathcal{F}:\mathbb{F}_{q}^{n}\to \mathbb{F}_{q}^{o},\mathcal{F}(x_{1},x_{2},\dots,x_{n})=(f_{1}(x_{1},x_{2},\dots,x_{n}),\dots,f_{o}(x_{1},x_{2},\dots,x_{n}))$。每个$f_{i}$都有：</p>
 <script type="math/tex; mode=display">f_{i}=\sum_{\substack{1\leq j\leq n\\1\leq k\leq v}}a_{j,k}^{(i)}x_{j}x_{k}+\sum_{1\leq j\leq n}c_{j}^{(i)}x_{j}+e^{(i)}</script><p>每一个$f_{i}$的二次项中都含有醋变量乘醋变量，醋变量乘油变量，但是不能含油变量乘油变量。这样的构造方便我们在给定$\text{z}=(z_{1},z_{2},\dots z_{n})$找到一个$z$的原像$\mathcal{F}^{-1}(\text{z})$。我们只需要随机给醋变量代入数值$x_{1}=\alpha_{1},x_{2}=\alpha_{2},\dots,x_{v}=\alpha_{v}$，这样整个系统就变成了一个含有$o$个油变量的$o$个方程的线性方程组（这也解释了为什么没有醋-醋项）。这样的方程大概率是有解的（如果没有解可以换一组）。</p>
+<p>之后我们需要生成一个随机可逆的线性变换$\mathcal{T}:\mathbb{F}^{n}\to \mathbb{F}^{n}$用于打乱油变量和醋变量，使得公钥看不出任何油醋的结构。所以公钥即$\mathcal{P}=\mathcal{F}\circ\mathcal{T},\mathcal{P}(x_{1},x_{2},\dots,x_{n})=(p_{1}(x_{1},x_{2},\dots,x_{n}),\dots,p_{o}(x_{1},x_{2},\dots,x_{n}))$，私钥则是$\mathcal{T},\mathcal{F}$。签名步骤则如下：对文件$m$进行签名，计算$\mathcal{F}^{-1}(m)=z,\mathcal{T}^{-1}(z)=\text{x}$，则$\text{x}$即为$m$的签名。对其进行验证只需检查$\mathcal{P}(\text{x})$是否等于$m$即可。</p>
+<h1 id="Kipnis-Shamir-攻击"><a href="#Kipnis-Shamir-攻击" class="headerlink" title="Kipnis-Shamir 攻击"></a>Kipnis-Shamir 攻击</h1><p>在最基础的OV方案设计中，油变量的数量和醋变量是相同的。Kipnis和shamir两个神人对这此设计了一种有效的攻击，使得在醋变量和油变量平衡的时候变得极其不安全（这也使得后面产生了UOV）。</p>
+<p>这个攻击的思想也很简单粗暴：既然你通过$\mathcal{T}$对$\mathcal{F}$做了混淆，那我只需要找到一个$\mathcal{\tilde{T}}$把被$\mathcal{T}$打乱的油和醋重新分离就好了。</p>
+<p>持续更新中…</p>
 ]]></content>
       <categories>
         <category>signature</category>
