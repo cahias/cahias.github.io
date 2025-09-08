@@ -28,7 +28,7 @@
 <meta property="og:description" content="今年碰到的关于油醋签名系统的题还挺多的，第一次听到油和醋的时候还感觉挺有趣的（再加上盐可以做饭了）。浅浅学习一下。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-09-02T12:40:53.000Z">
-<meta property="article:modified_time" content="2025-09-03T10:37:27.300Z">
+<meta property="article:modified_time" content="2025-09-08T09:26:22.950Z">
 <meta property="article:author" content="N1gh7ma12e">
 <meta property="article:tag" content="后量子密码">
 <meta name="twitter:card" content="summary">
@@ -230,7 +230,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2025-09-03 18:37:27" itemprop="dateModified" datetime="2025-09-03T18:37:27+08:00">2025-09-03</time>
+                <time title="修改时间：2025-09-08 17:26:22" itemprop="dateModified" datetime="2025-09-08T17:26:22+08:00">2025-09-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -248,14 +248,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.4k</span>
+              <span>4.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>8 分钟</span>
             </span>
 
         </div>
@@ -275,9 +275,47 @@
 <h1 id="油醋签名系统"><a href="#油醋签名系统" class="headerlink" title="油醋签名系统"></a>油醋签名系统</h1><p>首先是定义：令$o,v$为正整数，$n=o+v$。$x_{1},x_{2},\dots,x_{v}$为醋变量，$x_{v+1},x_{v+2},\dots,x_{n}$为油变量。<br>其中心映射$\mathcal{F}:\mathbb{F}_{q}^{n}\to \mathbb{F}_{q}^{o},\mathcal{F}(x_{1},x_{2},\dots,x_{n})=(f_{1}(x_{1},x_{2},\dots,x_{n}),\dots,f_{o}(x_{1},x_{2},\dots,x_{n}))$。每个$f_{i}$都有：</p>
 <script type="math/tex; mode=display">f_{i}=\sum_{\substack{1\leq j\leq n\\1\leq k\leq v}}a_{j,k}^{(i)}x_{j}x_{k}+\sum_{1\leq j\leq n}c_{j}^{(i)}x_{j}+e^{(i)}</script><p>每一个$f_{i}$的二次项中都含有醋变量乘醋变量，醋变量乘油变量，但是不能含油变量乘油变量。这样的构造方便我们在给定$\text{z}=(z_{1},z_{2},\dots z_{n})$找到一个$z$的原像$\mathcal{F}^{-1}(\text{z})$。我们只需要随机给醋变量代入数值$x_{1}=\alpha_{1},x_{2}=\alpha_{2},\dots,x_{v}=\alpha_{v}$，这样整个系统就变成了一个含有$o$个油变量的$o$个方程的线性方程组（这也解释了为什么没有醋-醋项）。这样的方程大概率是有解的（如果没有解可以换一组）。</p>
 <p>之后我们需要生成一个随机可逆的线性变换$\mathcal{T}:\mathbb{F}^{n}\to \mathbb{F}^{n}$用于打乱油变量和醋变量，使得公钥看不出任何油醋的结构。所以公钥即$\mathcal{P}=\mathcal{F}\circ\mathcal{T},\mathcal{P}(x_{1},x_{2},\dots,x_{n})=(p_{1}(x_{1},x_{2},\dots,x_{n}),\dots,p_{o}(x_{1},x_{2},\dots,x_{n}))$，私钥则是$\mathcal{T},\mathcal{F}$。签名步骤则如下：对文件$m$进行签名，计算$\mathcal{F}^{-1}(m)=z,\mathcal{T}^{-1}(z)=\text{x}$，则$\text{x}$即为$m$的签名。对其进行验证只需检查$\mathcal{P}(\text{x})$是否等于$m$即可。</p>
-<h1 id="Kipnis-Shamir-攻击"><a href="#Kipnis-Shamir-攻击" class="headerlink" title="Kipnis-Shamir 攻击"></a>Kipnis-Shamir 攻击</h1><p>在最基础的OV方案设计中，油变量的数量和醋变量是相同的。Kipnis和shamir两个神人对这此设计了一种有效的攻击，使得在醋变量和油变量平衡的时候变得极其不安全（这也使得后面产生了UOV）。</p>
+<h1 id="Kipnis-Shamir-攻击"><a href="#Kipnis-Shamir-攻击" class="headerlink" title="Kipnis-Shamir 攻击"></a>Kipnis-Shamir 攻击</h1><h2 id="子空间和不变子空间"><a href="#子空间和不变子空间" class="headerlink" title="子空间和不变子空间"></a>子空间和不变子空间</h2><p>在讲之前，得先讲一些代数的内容。<br>子空间：在<strong>线性代数</strong>中，假设我们在一个向量空间$V$（比如$\mathbb{R}^n$）里。一个集合$W \subseteq V$，如果它本身在向量加法和数乘下也满足向量空间的公理，那么我们称$W$是$V$的<strong>子空间</strong>。<br>换句话来说，$W$是子空间的条件是：</p>
+<ol>
+<li>零向量在$W$里</li>
+<li>对加法和数乘封闭</li>
+</ol>
+<p>不变子空间： 假设我们有一个线性算子（或者矩阵）$T:V\to V$即$T$把$V$中的向量映射回$V$中。如果$W\subseteq V$且是一个子空间，并且满足：$T(W)\subseteq W$，我们就称$W$是$T$的一个不变子空间。</p>
+<h2 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h2><p>在最基础的OV方案设计中，油变量的数量和醋变量是相同的。Kipnis和shamir两个神人对这此设计了一种有效的攻击，使得在醋变量和油变量平衡的时候变得极其不安全（这也使得后面产生了UOV）。</p>
 <p>这个攻击的思想也很简单粗暴：既然你通过$\mathcal{T}$对$\mathcal{F}$做了混淆，那我只需要找到一个$\mathcal{\tilde{T}}$把被$\mathcal{T}$打乱的油和醋重新分离就好了。</p>
-<p>持续更新中…</p>
+<p>我们这里先假设中心映射的多项式$f_{1},f_{2},\dots,f_{o}$中都仅仅含有二次项，而不含一次项和常数项（因为一次项和常数项并不会对安全性造成影响，之后会解释）此处我们有$o=v$，且仅考虑有限域$\mathbb{F}_{q}$的特征值非2。</p>
+<p>每个多项式$f_{i}$都能表示成对称矩阵的形式，即：$f_{i}=\text{x}^{t}F_{i}\text{x}$，$F_{i}$即是对称矩阵，有如下的形式：<script type="math/tex">F_{i}=\begin{pmatrix}
+F_{i_{1}}&F_{i_{2}} \\
+F_{i_{3}}&0
+\end{pmatrix}</script><br>这应该也不难想象，其中的$F_{i_{1}}$即醋醋多项式的系数，$F_{i_{2}},F_{i_{3}}$都是油醋多项式的系数值的一半。$0$则是$o\times o$的零矩阵，是油油多项式的系数（因为不存在）。同理公钥$p_{i}$也能表示成对称矩阵的形式，有：$P_{i}=T^{t}F_{i}T$，其中$T$为线性变换$\mathcal{T}$的矩阵形式。</p>
+<p>现在我们定义$\mathbb{F}^{n}$的子空间：</p>
+<p>$O=\{\text{x}=(x_{1},x_{2},\dots,x_{n})\in \mathbb{F}^{n}\mid x_{1}=x_{2}=\dots=x_{v}=0\}$</p>
+<p>$V=\{\text{x}=(x_{1},x_{2},\dots,x_{n})\in \mathbb{F}^{n}\mid x_{v+1}=x_{v+2}=\dots=x_{n}=0\}$</p>
+<p>如果$E_{1}=\sum a_{i}F_{i},E_{2}=\sum b_{i}F_{i}$，且$E_{1}$可逆。设$x=\begin{pmatrix}0\\z\end{pmatrix}\in O$，对于$E_{2}$易知:</p>
+<script type="math/tex; mode=display">
+E_{2}\begin{pmatrix}0\\
+z\end{pmatrix}=
+\begin{pmatrix}
+A_{2}&B_{2} \\
+C_{2}&0
+\end{pmatrix}
+\begin{pmatrix}
+0 \\
+z 
+\end{pmatrix}
+=\begin{pmatrix}
+B_{2}z \\
+0
+\end{pmatrix}</script><p>所以$E_{2}(O)\subseteq V$。又因$E_{1}$可逆，易知：</p>
+<script type="math/tex; mode=display">E_{1}^{-1}=
+\begin{pmatrix}
+0&C_{1}^{-1} \\
+B_{1}^{-1}&-B_{1}^{-1}A_{1}C_{1}^{-1}
+\end{pmatrix}</script><p>则有$E_{1}^{-1}\begin{pmatrix}u\\0\end{pmatrix}=\begin{pmatrix}0\\B_{1}^{-1}u\end{pmatrix}\subseteq O$，那么$O$是$E=E_{1}^{-1}E_{2}$的不变子空间。</p>
+<p>如果$W_{1}=\sum c_{i}P_{i},W_{2}=\sum d_{i}P_{i}$，且$W_{1}$可逆。</p>
+<p>由于$P_{i}=T^{t}F_{i}T$，所以有：$W_{1}=\sum c_{i}T^{t}F_{i}T=T^{t}\left( \sum c_{i}F_{i} \right)T=T^tE_{1}T$，同理有：$W_{2}=T^{t}E_{2}T$。</p>
+<p>所以有$W=W_{1}^{-1}W_{2}=(T^{t}E_{1}T)^{-1}(T^{t}E_{2}T)=T^{-1}ET$，即$W$与$E$相似。又因为$O$是$E$的不变子空间，所以$\mathcal{T}^{-1}(O)$是$W=W_{1}^{-1}W_{2}$的不变子空间。</p>
+<p>对于如何通过$W$去找到$\mathcal{T}^{-1}(O)$，我们只需要计算$W$的特征多项式$\mathcal{X}W(x)$，会发现它是一个完全平方式（为什么一定是，我还没太懂，有知道的和我说一下），即：$\mathcal{X}W(x)=(h(x))^{2}$，只需要求$h(W)$的kernel，这就是不变子空间$\mathcal{T}^{-1}(O)$里的所有向量的集合。后续只需据此和公钥恢复出私钥即可。</p>
 
     </div>
 
@@ -358,7 +396,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E5%8F%98%E9%87%8F%E5%AF%86%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">多变量密码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B2%B9%E9%86%8B%E7%AD%BE%E5%90%8D%E7%B3%BB%E7%BB%9F"><span class="nav-number">2.</span> <span class="nav-text">油醋签名系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kipnis-Shamir-%E6%94%BB%E5%87%BB"><span class="nav-number">3.</span> <span class="nav-text">Kipnis-Shamir 攻击</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E5%8F%98%E9%87%8F%E5%AF%86%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">多变量密码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B2%B9%E9%86%8B%E7%AD%BE%E5%90%8D%E7%B3%BB%E7%BB%9F"><span class="nav-number">2.</span> <span class="nav-text">油醋签名系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kipnis-Shamir-%E6%94%BB%E5%87%BB"><span class="nav-number">3.</span> <span class="nav-text">Kipnis-Shamir 攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E7%A9%BA%E9%97%B4%E5%92%8C%E4%B8%8D%E5%8F%98%E5%AD%90%E7%A9%BA%E9%97%B4"><span class="nav-number">3.1.</span> <span class="nav-text">子空间和不变子空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%BB%E5%87%BB"><span class="nav-number">3.2.</span> <span class="nav-text">攻击</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -431,12 +469,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">19k</span>
+    <span title="站点总字数">21k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">35 分钟</span>
+    <span title="站点阅读时长">39 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
