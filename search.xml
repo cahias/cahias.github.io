@@ -44,6 +44,8 @@
 <h1 id="HiddenOracle"><a href="#HiddenOracle" class="headerlink" title="HiddenOracle"></a>HiddenOracle</h1><p>题目：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> treasure <span class="keyword">import</span> FLAG, p, a, b  </span><br><span class="line">  </span><br><span class="line">E = EllipticCurve(GF(p), [a,b])  </span><br><span class="line">A = [randint(<span class="number">0</span>,p) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>)]  </span><br><span class="line">B = <span class="built_in">sorted</span>([randint(<span class="number">0</span>,p) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>)])  </span><br><span class="line">oracle = <span class="keyword">lambda</span> x: <span class="built_in">sum</span>([a*<span class="built_in">pow</span>(<span class="built_in">int</span>(x),b,p) <span class="keyword">for</span> a,b <span class="keyword">in</span> <span class="built_in">zip</span>(A,B)])*E.lift_x(<span class="number">0x1337</span>)  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">128</span>):  </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;[+]&quot;</span>, oracle(<span class="built_in">input</span>(<span class="string">&quot;[?] &quot;</span>)).xy())  </span><br><span class="line"><span class="keyword">if</span> <span class="built_in">int</span>(<span class="built_in">input</span>(<span class="string">&quot;[*]&quot;</span>)) == A[<span class="number">0</span>]: <span class="built_in">print</span>(FLAG)</span><br></pre></td></tr></table></figure><br>一共有128组，其中$G$为$E$上横坐标为<code>0x1337</code>的点：</p>
 <script type="math/tex; mode=display">
 leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>可以知道$leak$的点肯定都是在曲线上的，所以可以先恢复一下系数。恢复完系数之后，可以发现该曲线的<code>order=p</code>，那就可以直接打smart attack求出$\sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p)$。难点在于如何根据128个式子求出$a_{0}$。在@adwa的帮助下， 找到了Ben-Or/Tiwari这个算法， 此处相当于只有一个元，照着搓搓就好了。<br><img src="/images/pic1.png" alt><br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">SmartAttack</span>(<span class="params">P,Q,p</span>):</span><br><span class="line">    E = P.curve()</span><br><span class="line">    Eqp = EllipticCurve(Qp(p, <span class="number">2</span>), [ ZZ(t) + randint(<span class="number">0</span>,p)*p <span class="keyword">for</span> t <span class="keyword">in</span> E.a_invariants() ])</span><br><span class="line"></span><br><span class="line">    P_Qps = Eqp.lift_x(ZZ(P.xy()[<span class="number">0</span>]), <span class="built_in">all</span>=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">for</span> P_Qp <span class="keyword">in</span> P_Qps:</span><br><span class="line">        <span class="keyword">if</span> GF(p)(P_Qp.xy()[<span class="number">1</span>]) == P.xy()[<span class="number">1</span>]:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    Q_Qps = Eqp.lift_x(ZZ(Q.xy()[<span class="number">0</span>]), <span class="built_in">all</span>=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">for</span> Q_Qp <span class="keyword">in</span> Q_Qps:</span><br><span class="line">        <span class="keyword">if</span> GF(p)(Q_Qp.xy()[<span class="number">1</span>]) == Q.xy()[<span class="number">1</span>]:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    p_times_P = p*P_Qp</span><br><span class="line">    p_times_Q = p*Q_Qp</span><br><span class="line"></span><br><span class="line">    x_P,y_P = p_times_P.xy()</span><br><span class="line">    x_Q,y_Q = p_times_Q.xy()</span><br><span class="line"></span><br><span class="line">    phi_P = -(x_P/y_P)</span><br><span class="line">    phi_Q = -(x_Q/y_Q)</span><br><span class="line">    k = phi_Q/phi_P</span><br><span class="line">    <span class="keyword">return</span> ZZ(k)</span><br><span class="line"></span><br><span class="line">point = [(<span class="number">161327874338378710119045173360110020172</span>, <span class="number">146211053105565414607092824897476611769</span>),</span><br><span class="line">(<span class="number">18640344881989485589826421817204171679</span>, <span class="number">93612267272283301509698942398210487992</span>),</span><br><span class="line">(<span class="number">157134026509852901241125107586310827797</span>, <span class="number">47069415459314099567908898235034040542</span>),</span><br><span class="line">(<span class="number">113155526393230548108441293824806664192</span>, <span class="number">97811312431923646161921683294127113172</span>),</span><br><span class="line">(<span class="number">175820630411500611266721556942898858534</span>, <span class="number">215536195888802052297970999177605243285</span>)]</span><br><span class="line"></span><br><span class="line">PR.&lt;a, b&gt; = PolynomialRing(ZZ)</span><br><span class="line">F = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">    x, y = point[i]</span><br><span class="line">    f = x^<span class="number">3</span> + a * x + b - y^<span class="number">2</span></span><br><span class="line">    F.append(f)</span><br><span class="line"></span><br><span class="line">res = Ideal(F).groebner_basis()</span><br><span class="line">p = <span class="built_in">int</span>(res[<span class="number">2</span>])</span><br><span class="line">a, b = p - res[<span class="number">0</span>].constant_coefficient(), p - res[<span class="number">1</span>].constant_coefficient()</span><br><span class="line"></span><br><span class="line">E = EllipticCurve(GF(p), [a,b])</span><br><span class="line">G = E.lift_x(<span class="number">0x1337</span>)</span><br><span class="line"></span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = remote(&#x27;&#x27;)</span></span><br><span class="line">io = process([<span class="string">&#x27;python&#x27;</span>, <span class="string">&#x27;/Users/nightmare/myCode/NSSCTF4th/example.py&#x27;</span>])</span><br><span class="line"></span><br><span class="line">t = <span class="number">64</span></span><br><span class="line">F = GF(p)</span><br><span class="line">g = F.multiplicative_generator()</span><br><span class="line">v = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>*t):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;[?] &#x27;</span>, <span class="built_in">str</span>(g^i).encode())</span><br><span class="line">    leak = E(<span class="built_in">eval</span>(io.recvline().split(<span class="string">b&#x27;]&#x27;</span>)[<span class="number">1</span>]))</span><br><span class="line">    v.append(SmartAttack(G, leak, p))</span><br><span class="line"></span><br><span class="line">V = matrix([v[i:i+t] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(t)])</span><br><span class="line"><span class="keyword">assert</span> rank(V) == t</span><br><span class="line"></span><br><span class="line">s = -vector(v[t:<span class="number">2</span>*t])</span><br><span class="line">L = V.solve_right(s)</span><br><span class="line"></span><br><span class="line">PR.&lt;z&gt; = PolynomialRing(F)</span><br><span class="line">Lambda = z^t + <span class="built_in">sum</span>(F(L[i]) * z^i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(t))</span><br><span class="line">R = Lambda.roots(multiplicities=<span class="literal">False</span>)</span><br><span class="line">B = [m.log(g) <span class="keyword">for</span> m <span class="keyword">in</span> R]</span><br><span class="line"></span><br><span class="line">V = matrix([[m^i <span class="keyword">for</span> m <span class="keyword">in</span> R] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(t)])</span><br><span class="line">b = vector(v[:t])</span><br><span class="line"></span><br><span class="line">a = V.solve_right(b)</span><br><span class="line">a0 = a[B.index(<span class="built_in">min</span>(B))]</span><br><span class="line">io.sendlineafter(<span class="string">b&quot;[*]&quot;</span>, <span class="built_in">str</span>(a0).encode())</span><br><span class="line">io.close()</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<h1 id="IQQT"><a href="#IQQT" class="headerlink" title="IQQT"></a>IQQT</h1><p>留个坑，之后填：<a href="https://eprint.iacr.org/2012/675">https://eprint.iacr.org/2012/675</a></p>
+<p> <a href="https://github.com/jvdsn/crypto-attacks/blob/708536c43fa632bb1278edd6651a30e8743e8d21/shared/small_roots/aono.py#L14">https://github.com/jvdsn/crypto-attacks/blob/708536c43fa632bb1278edd6651a30e8743e8d21/shared/small_roots/aono.py#L14</a></p>
 ]]></content>
       <categories>
         <category>writeup</category>
@@ -51,66 +53,6 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>油醋签名系统</title>
-    <url>/2025/09/02/%E6%B2%B9%E9%86%8B%E7%AD%BE%E5%90%8D%E7%B3%BB%E7%BB%9F/</url>
-    <content><![CDATA[<p>今年碰到的关于油醋签名系统的题还挺多的，第一次听到油和醋的时候还感觉挺有趣的<del>（再加上盐可以做饭了）</del>。浅浅学习一下。<br><span id="more"></span></p>
-<h1 id="多变量密码"><a href="#多变量密码" class="headerlink" title="多变量密码"></a>多变量密码</h1><p>多变量密码是基于有限域$\mathbb{F}_{q}$上解多元二次方程组困难性（MQ问题）的公钥密码体制。下面描述一下MQ问题：<br>给定$F_{q}$中的多元二次方程组</p>
-<script type="math/tex; mode=display">f_{i}(\text{x})=\sum_{1\leq j,k\leq n}a_{j,k}^{(i)}x_{j}x_{k}+\sum_{j=1}^{n}b_{j,k}^{(i)}x_{j}+c^{(i)}</script><p>已知$\text{y}=(f_{1}(\text{x}),f_{2}(\text{x}),\dots,f_{m}(\text{x}))$，求解满足方程组的解$\text{x}’=(x_{1}’,x_{2}’,\dots,x_{n}’)$。</p>
-<p>多变量体制几乎都遵循一个统一的套路：$\mathcal{P}=\mathcal{S}\circ\mathcal{F}\circ\mathcal{T}$，其中$\mathcal{P}$为公钥，$(\mathcal{S},\mathcal{F},\mathcal{T})$为私钥。它核心则在于中心映射$\mathcal{F}:\mathbb{F}_{q}^n \to \mathbb{F}_{q}^{m},\mathcal{F}(\text{x})=(f_{1}(\text{x}),f_{2}(\text{x}),\dots,f_{m}(\text{x}))$，这里$\mathcal{F}$必须满足的一个条件就是$\mathcal{F}$的原像必须在计算上是容易找到的(也正因为$\mathcal{F}$存在某种这样的设计，所以多变量密码并非是provably secure)。$\mathcal{S},\mathcal{T}$则是两个随机可逆的线性映射，用于打乱多项式和变量对$\mathcal{F}$做混淆。这样对于公钥用户来说仅仅是看到经过混淆的$\mathcal{P}$，解$\mathcal{P}(\text{x})=y$是困难的。</p>
-<p>根据上面所述，签名步骤就很显而易见了：对文件$m$进行签名，计算$\mathcal{S}^{-1}(m)=y,\mathcal{F}^{-1}(y)=z,\mathcal{T}^{-1}(z)=\text{x}$，则$\text{x}$即为$m$的签名。对其进行验证只需检查$\mathcal{P}(\text{x})$是否等于$m$即可。</p>
-<h1 id="油醋签名系统"><a href="#油醋签名系统" class="headerlink" title="油醋签名系统"></a>油醋签名系统</h1><p>首先是定义：令$o,v$为正整数，$n=o+v$。$x_{1},x_{2},\dots,x_{v}$为醋变量，$x_{v+1},x_{v+2},\dots,x_{n}$为油变量。<br>其中心映射$\mathcal{F}:\mathbb{F}_{q}^{n}\to \mathbb{F}_{q}^{o},\mathcal{F}(x_{1},x_{2},\dots,x_{n})=(f_{1}(x_{1},x_{2},\dots,x_{n}),\dots,f_{o}(x_{1},x_{2},\dots,x_{n}))$。每个$f_{i}$都有：</p>
-<script type="math/tex; mode=display">f_{i}=\sum_{\substack{1\leq j\leq n\\1\leq k\leq v}}a_{j,k}^{(i)}x_{j}x_{k}+\sum_{1\leq j\leq n}c_{j}^{(i)}x_{j}+e^{(i)}</script><p>每一个$f_{i}$的二次项中都含有醋变量乘醋变量，醋变量乘油变量，但是不能含油变量乘油变量。这样的构造方便我们在给定$\text{z}=(z_{1},z_{2},\dots z_{n})$找到一个$z$的原像$\mathcal{F}^{-1}(\text{z})$。我们只需要随机给醋变量代入数值$x_{1}=\alpha_{1},x_{2}=\alpha_{2},\dots,x_{v}=\alpha_{v}$，这样整个系统就变成了一个含有$o$个油变量的$o$个方程的线性方程组（这也解释了为什么没有醋-醋项）。这样的方程大概率是有解的（如果没有解可以换一组）。</p>
-<p>之后我们需要生成一个随机可逆的线性变换$\mathcal{T}:\mathbb{F}^{n}\to \mathbb{F}^{n}$用于打乱油变量和醋变量，使得公钥看不出任何油醋的结构。所以公钥即$\mathcal{P}=\mathcal{F}\circ\mathcal{T},\mathcal{P}(x_{1},x_{2},\dots,x_{n})=(p_{1}(x_{1},x_{2},\dots,x_{n}),\dots,p_{o}(x_{1},x_{2},\dots,x_{n}))$，私钥则是$\mathcal{T},\mathcal{F}$。签名步骤则如下：对文件$m$进行签名，计算$\mathcal{F}^{-1}(m)=z,\mathcal{T}^{-1}(z)=\text{x}$，则$\text{x}$即为$m$的签名。对其进行验证只需检查$\mathcal{P}(\text{x})$是否等于$m$即可。</p>
-<h1 id="Kipnis-Shamir-攻击"><a href="#Kipnis-Shamir-攻击" class="headerlink" title="Kipnis-Shamir 攻击"></a>Kipnis-Shamir 攻击</h1><h2 id="子空间和不变子空间"><a href="#子空间和不变子空间" class="headerlink" title="子空间和不变子空间"></a>子空间和不变子空间</h2><p>在讲之前，得先讲一些代数的内容。<br>子空间：在<strong>线性代数</strong>中，假设我们在一个向量空间$V$（比如$\mathbb{R}^n$）里。一个集合$W \subseteq V$，如果它本身在向量加法和数乘下也满足向量空间的公理，那么我们称$W$是$V$的<strong>子空间</strong>。<br>换句话来说，$W$是子空间的条件是：</p>
-<ol>
-<li>零向量在$W$里</li>
-<li>对加法和数乘封闭</li>
-</ol>
-<p>不变子空间： 假设我们有一个线性算子（或者矩阵）$T:V\to V$即$T$把$V$中的向量映射回$V$中。如果$W\subseteq V$且是一个子空间，并且满足：$T(W)\subseteq W$，我们就称$W$是$T$的一个不变子空间。</p>
-<h2 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h2><p>在最基础的OV方案设计中，油变量的数量和醋变量是相同的。Kipnis和shamir两个神人对这此设计了一种有效的攻击，使得在醋变量和油变量平衡的时候变得极其不安全（这也使得后面产生了UOV）。</p>
-<p>这个攻击的思想也很简单粗暴：既然你通过$\mathcal{T}$对$\mathcal{F}$做了混淆，那我只需要找到一个$\mathcal{\tilde{T}}$把被$\mathcal{T}$打乱的油和醋重新分离就好了。</p>
-<p>我们这里先假设中心映射的多项式$f_{1},f_{2},\dots,f_{o}$中都仅仅含有二次项，而不含一次项和常数项（因为一次项和常数项并不会对安全性造成影响，之后会解释）此处我们有$o=v$，且仅考虑有限域$\mathbb{F}_{q}$的特征值非2。</p>
-<p>每个多项式$f_{i}$都能表示成对称矩阵的形式，即：$f_{i}=\text{x}^{t}F_{i}\text{x}$，$F_{i}$即是对称矩阵，有如下的形式：<script type="math/tex">F_{i}=\begin{pmatrix}
-F_{i_{1}}&F_{i_{2}} \\
-F_{i_{3}}&0
-\end{pmatrix}</script><br>这应该也不难想象，其中的$F_{i_{1}}$即醋醋多项式的系数，$F_{i_{2}},F_{i_{3}}$都是油醋多项式的系数值的一半。$0$则是$o\times o$的零矩阵，是油油多项式的系数（因为不存在）。同理公钥$p_{i}$也能表示成对称矩阵的形式，有：$P_{i}=T^{t}F_{i}T$，其中$T$为线性变换$\mathcal{T}$的矩阵形式。</p>
-<p>现在我们定义$\mathbb{F}^{n}$的子空间：</p>
-<p>$O=\{\text{x}=(x_{1},x_{2},\dots,x_{n})\in \mathbb{F}^{n}\mid x_{1}=x_{2}=\dots=x_{v}=0\}$</p>
-<p>$V=\{\text{x}=(x_{1},x_{2},\dots,x_{n})\in \mathbb{F}^{n}\mid x_{v+1}=x_{v+2}=\dots=x_{n}=0\}$</p>
-<p>如果$E_{1}=\sum a_{i}F_{i},E_{2}=\sum b_{i}F_{i}$，且$E_{1}$可逆。设$x=\begin{pmatrix}0\\z\end{pmatrix}\in O$，对于$E_{2}$易知:</p>
-<script type="math/tex; mode=display">
-E_{2}\begin{pmatrix}0\\
-z\end{pmatrix}=
-\begin{pmatrix}
-A_{2}&B_{2} \\
-C_{2}&0
-\end{pmatrix}
-\begin{pmatrix}
-0 \\
-z 
-\end{pmatrix}
-=\begin{pmatrix}
-B_{2}z \\
-0
-\end{pmatrix}</script><p>所以$E_{2}(O)\subseteq V$。又因$E_{1}$可逆，易知：</p>
-<script type="math/tex; mode=display">E_{1}^{-1}=
-\begin{pmatrix}
-0&C_{1}^{-1} \\
-B_{1}^{-1}&-B_{1}^{-1}A_{1}C_{1}^{-1}
-\end{pmatrix}</script><p>则有$E_{1}^{-1}\begin{pmatrix}u\\0\end{pmatrix}=\begin{pmatrix}0\\B_{1}^{-1}u\end{pmatrix}\subseteq O$，那么$O$是$E=E_{1}^{-1}E_{2}$的不变子空间。</p>
-<p>如果$W_{1}=\sum c_{i}P_{i},W_{2}=\sum d_{i}P_{i}$，且$W_{1}$可逆。</p>
-<p>由于$P_{i}=T^{t}F_{i}T$，所以有：$W_{1}=\sum c_{i}T^{t}F_{i}T=T^{t}\left( \sum c_{i}F_{i} \right)T=T^tE_{1}T$，同理有：$W_{2}=T^{t}E_{2}T$。</p>
-<p>所以有$W=W_{1}^{-1}W_{2}=(T^{t}E_{1}T)^{-1}(T^{t}E_{2}T)=T^{-1}ET$，即$W$与$E$相似。又因为$O$是$E$的不变子空间，所以$\mathcal{T}^{-1}(O)$是$W=W_{1}^{-1}W_{2}$的不变子空间。</p>
-<p>对于如何通过$W$去找到$\mathcal{T}^{-1}(O)$，我们只需要计算$W$的特征多项式$\mathcal{X}W(x)$，会发现它是一个完全平方式（为什么一定是，我还没太懂，有知道的和我说一下），即：$\mathcal{X}W(x)=(h(x))^{2}$，只需要求$h(W)$的kernel，这就是不变子空间$\mathcal{T}^{-1}(O)$里的所有向量的集合。后续只需据此和公钥恢复出私钥即可。</p>
-]]></content>
-      <categories>
-        <category>signature</category>
-      </categories>
-      <tags>
-        <tag>后量子密码</tag>
       </tags>
   </entry>
   <entry>
@@ -173,6 +115,66 @@ f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^
         <tag>学习</tag>
         <tag>Crypto</tag>
         <tag>拉格朗日</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>油醋签名系统</title>
+    <url>/2025/09/02/%E6%B2%B9%E9%86%8B%E7%AD%BE%E5%90%8D%E7%B3%BB%E7%BB%9F/</url>
+    <content><![CDATA[<p>今年碰到的关于油醋签名系统的题还挺多的，第一次听到油和醋的时候还感觉挺有趣的<del>（再加上盐可以做饭了）</del>。浅浅学习一下。<br><span id="more"></span></p>
+<h1 id="多变量密码"><a href="#多变量密码" class="headerlink" title="多变量密码"></a>多变量密码</h1><p>多变量密码是基于有限域$\mathbb{F}_{q}$上解多元二次方程组困难性（MQ问题）的公钥密码体制。下面描述一下MQ问题：<br>给定$F_{q}$中的多元二次方程组</p>
+<script type="math/tex; mode=display">f_{i}(\text{x})=\sum_{1\leq j,k\leq n}a_{j,k}^{(i)}x_{j}x_{k}+\sum_{j=1}^{n}b_{j,k}^{(i)}x_{j}+c^{(i)}</script><p>已知$\text{y}=(f_{1}(\text{x}),f_{2}(\text{x}),\dots,f_{m}(\text{x}))$，求解满足方程组的解$\text{x}’=(x_{1}’,x_{2}’,\dots,x_{n}’)$。</p>
+<p>多变量体制几乎都遵循一个统一的套路：$\mathcal{P}=\mathcal{S}\circ\mathcal{F}\circ\mathcal{T}$，其中$\mathcal{P}$为公钥，$(\mathcal{S},\mathcal{F},\mathcal{T})$为私钥。它核心则在于中心映射$\mathcal{F}:\mathbb{F}_{q}^n \to \mathbb{F}_{q}^{m},\mathcal{F}(\text{x})=(f_{1}(\text{x}),f_{2}(\text{x}),\dots,f_{m}(\text{x}))$，这里$\mathcal{F}$必须满足的一个条件就是$\mathcal{F}$的原像必须在计算上是容易找到的(也正因为$\mathcal{F}$存在某种这样的设计，所以多变量密码并非是provably secure)。$\mathcal{S},\mathcal{T}$则是两个随机可逆的线性映射，用于打乱多项式和变量对$\mathcal{F}$做混淆。这样对于公钥用户来说仅仅是看到经过混淆的$\mathcal{P}$，解$\mathcal{P}(\text{x})=y$是困难的。</p>
+<p>根据上面所述，签名步骤就很显而易见了：对文件$m$进行签名，计算$\mathcal{S}^{-1}(m)=y,\mathcal{F}^{-1}(y)=z,\mathcal{T}^{-1}(z)=\text{x}$，则$\text{x}$即为$m$的签名。对其进行验证只需检查$\mathcal{P}(\text{x})$是否等于$m$即可。</p>
+<h1 id="油醋签名系统"><a href="#油醋签名系统" class="headerlink" title="油醋签名系统"></a>油醋签名系统</h1><p>首先是定义：令$o,v$为正整数，$n=o+v$。$x_{1},x_{2},\dots,x_{v}$为醋变量，$x_{v+1},x_{v+2},\dots,x_{n}$为油变量。<br>其中心映射$\mathcal{F}:\mathbb{F}_{q}^{n}\to \mathbb{F}_{q}^{o},\mathcal{F}(x_{1},x_{2},\dots,x_{n})=(f_{1}(x_{1},x_{2},\dots,x_{n}),\dots,f_{o}(x_{1},x_{2},\dots,x_{n}))$。每个$f_{i}$都有：</p>
+<script type="math/tex; mode=display">f_{i}=\sum_{\substack{1\leq j\leq n\\1\leq k\leq v}}a_{j,k}^{(i)}x_{j}x_{k}+\sum_{1\leq j\leq n}c_{j}^{(i)}x_{j}+e^{(i)}</script><p>每一个$f_{i}$的二次项中都含有醋变量乘醋变量，醋变量乘油变量，但是不能含油变量乘油变量。这样的构造方便我们在给定$\text{z}=(z_{1},z_{2},\dots z_{n})$找到一个$z$的原像$\mathcal{F}^{-1}(\text{z})$。我们只需要随机给醋变量代入数值$x_{1}=\alpha_{1},x_{2}=\alpha_{2},\dots,x_{v}=\alpha_{v}$，这样整个系统就变成了一个含有$o$个油变量的$o$个方程的线性方程组（这也解释了为什么没有醋-醋项）。这样的方程大概率是有解的（如果没有解可以换一组）。</p>
+<p>之后我们需要生成一个随机可逆的线性变换$\mathcal{T}:\mathbb{F}^{n}\to \mathbb{F}^{n}$用于打乱油变量和醋变量，使得公钥看不出任何油醋的结构。所以公钥即$\mathcal{P}=\mathcal{F}\circ\mathcal{T},\mathcal{P}(x_{1},x_{2},\dots,x_{n})=(p_{1}(x_{1},x_{2},\dots,x_{n}),\dots,p_{o}(x_{1},x_{2},\dots,x_{n}))$，私钥则是$\mathcal{T},\mathcal{F}$。签名步骤则如下：对文件$m$进行签名，计算$\mathcal{F}^{-1}(m)=z,\mathcal{T}^{-1}(z)=\text{x}$，则$\text{x}$即为$m$的签名。对其进行验证只需检查$\mathcal{P}(\text{x})$是否等于$m$即可。</p>
+<h1 id="Kipnis-Shamir-攻击"><a href="#Kipnis-Shamir-攻击" class="headerlink" title="Kipnis-Shamir 攻击"></a>Kipnis-Shamir 攻击</h1><h2 id="子空间和不变子空间"><a href="#子空间和不变子空间" class="headerlink" title="子空间和不变子空间"></a>子空间和不变子空间</h2><p>在讲之前，得先讲一些代数的内容。<br>子空间：在<strong>线性代数</strong>中，假设我们在一个向量空间$V$（比如$\mathbb{R}^n$）里。一个集合$W \subseteq V$，如果它本身在向量加法和数乘下也满足向量空间的公理，那么我们称$W$是$V$的<strong>子空间</strong>。<br>换句话来说，$W$是子空间的条件是：</p>
+<ol>
+<li>零向量在$W$里</li>
+<li>对加法和数乘封闭</li>
+</ol>
+<p>不变子空间： 假设我们有一个线性算子（或者矩阵）$T:V\to V$即$T$把$V$中的向量映射回$V$中。如果$W\subseteq V$且是一个子空间，并且满足：$T(W)\subseteq W$，我们就称$W$是$T$的一个不变子空间。</p>
+<h2 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h2><p>在最基础的OV方案设计中，油变量的数量和醋变量是相同的。Kipnis和shamir两个神人对这此设计了一种有效的攻击，使得在醋变量和油变量平衡的时候变得极其不安全（这也使得后面产生了UOV）。</p>
+<p>这个攻击的思想也很简单粗暴：既然你通过$\mathcal{T}$对$\mathcal{F}$做了混淆，那我只需要找到一个$\mathcal{\tilde{T}}$把被$\mathcal{T}$打乱的油和醋重新分离就好了。</p>
+<p>我们这里先假设中心映射的多项式$f_{1},f_{2},\dots,f_{o}$中都仅仅含有二次项，而不含一次项和常数项（因为一次项和常数项并不会对安全性造成影响，之后会解释）此处我们有$o=v$，且仅考虑有限域$\mathbb{F}_{q}$的特征值非2。</p>
+<p>每个多项式$f_{i}$都能表示成对称矩阵的形式，即：$f_{i}=\text{x}^{t}F_{i}\text{x}$，$F_{i}$即是对称矩阵，有如下的形式：<script type="math/tex">F_{i}=\begin{pmatrix}
+F_{i_{1}}&F_{i_{2}} \\
+F_{i_{3}}&0
+\end{pmatrix}</script><br>这应该也不难想象，其中的$F_{i_{1}}$即醋醋多项式的系数，$F_{i_{2}},F_{i_{3}}$都是油醋多项式的系数值的一半。$0$则是$o\times o$的零矩阵，是油油多项式的系数（因为不存在）。同理公钥$p_{i}$也能表示成对称矩阵的形式，有：$P_{i}=T^{t}F_{i}T$，其中$T$为线性变换$\mathcal{T}$的矩阵形式。</p>
+<p>现在我们定义$\mathbb{F}^{n}$的子空间：</p>
+<p>$O=\{\text{x}=(x_{1},x_{2},\dots,x_{n})\in \mathbb{F}^{n}\mid x_{1}=x_{2}=\dots=x_{v}=0\}$</p>
+<p>$V=\{\text{x}=(x_{1},x_{2},\dots,x_{n})\in \mathbb{F}^{n}\mid x_{v+1}=x_{v+2}=\dots=x_{n}=0\}$</p>
+<p>如果$E_{1}=\sum a_{i}F_{i},E_{2}=\sum b_{i}F_{i}$，且$E_{1}$可逆。设$x=\begin{pmatrix}0\\z\end{pmatrix}\in O$，对于$E_{2}$易知:</p>
+<script type="math/tex; mode=display">
+E_{2}\begin{pmatrix}0\\
+z\end{pmatrix}=
+\begin{pmatrix}
+A_{2}&B_{2} \\
+C_{2}&0
+\end{pmatrix}
+\begin{pmatrix}
+0 \\
+z 
+\end{pmatrix}
+=\begin{pmatrix}
+B_{2}z \\
+0
+\end{pmatrix}</script><p>所以$E_{2}(O)\subseteq V$。又因$E_{1}$可逆，易知：</p>
+<script type="math/tex; mode=display">E_{1}^{-1}=
+\begin{pmatrix}
+0&C_{1}^{-1} \\
+B_{1}^{-1}&-B_{1}^{-1}A_{1}C_{1}^{-1}
+\end{pmatrix}</script><p>则有$E_{1}^{-1}\begin{pmatrix}u\\0\end{pmatrix}=\begin{pmatrix}0\\B_{1}^{-1}u\end{pmatrix}\subseteq O$，那么$O$是$E=E_{1}^{-1}E_{2}$的不变子空间。</p>
+<p>如果$W_{1}=\sum c_{i}P_{i},W_{2}=\sum d_{i}P_{i}$，且$W_{1}$可逆。</p>
+<p>由于$P_{i}=T^{t}F_{i}T$，所以有：$W_{1}=\sum c_{i}T^{t}F_{i}T=T^{t}\left( \sum c_{i}F_{i} \right)T=T^tE_{1}T$，同理有：$W_{2}=T^{t}E_{2}T$。</p>
+<p>所以有$W=W_{1}^{-1}W_{2}=(T^{t}E_{1}T)^{-1}(T^{t}E_{2}T)=T^{-1}ET$，即$W$与$E$相似。又因为$O$是$E$的不变子空间，所以$\mathcal{T}^{-1}(O)$是$W=W_{1}^{-1}W_{2}$的不变子空间。</p>
+<p>对于如何通过$W$去找到$\mathcal{T}^{-1}(O)$，我们只需要计算$W$的特征多项式$\mathcal{X}W(x)$，会发现它是一个完全平方式（为什么一定是，我还没太懂，有知道的和我说一下），即：$\mathcal{X}W(x)=(h(x))^{2}$，只需要求$h(W)$的kernel，这就是不变子空间$\mathcal{T}^{-1}(O)$里的所有向量的集合。后续只需据此和公钥恢复出私钥即可。</p>
+]]></content>
+      <categories>
+        <category>signature</category>
+      </categories>
+      <tags>
+        <tag>后量子密码</tag>
       </tags>
   </entry>
 </search>
