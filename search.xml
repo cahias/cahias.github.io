@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>I‘m back</title>
-    <url>/2025/05/21/I%E2%80%98m%20back/</url>
-    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
-]]></content>
-      <tags>
-        <tag>生活</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Crypto常用工具篇</title>
     <url>/2025/08/25/Crypto%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E7%AF%87/</url>
     <content><![CDATA[<p>Crypto的工具太多啦，经常想不起来一些工具是怎么使用的，这里简单记录一下一些工具的使用。<br><span id="more"></span></p>
@@ -28,6 +19,15 @@
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>I‘m back</title>
+    <url>/2025/05/21/I%E2%80%98m%20back/</url>
+    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
+]]></content>
+      <tags>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -53,30 +53,6 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>应急响应</title>
-    <url>/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</url>
-    <content><![CDATA[<p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
-<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
-<ul>
-<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
-<li>WebShell能被正常解析</li>
-<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
-其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
-<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
-<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
-<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
-</ul>
-<p>持续更新中…</p>
-]]></content>
-      <categories>
-        <category>应急响应</category>
-      </categories>
-      <tags>
-        <tag>学习</tag>
-        <tag>Web</tag>
       </tags>
   </entry>
   <entry>
@@ -107,6 +83,30 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       </categories>
       <tags>
         <tag>生活</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>应急响应</title>
+    <url>/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</url>
+    <content><![CDATA[<p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
+<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
+<ul>
+<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
+<li>WebShell能被正常解析</li>
+<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
+其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
+<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
+<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
+<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
+</ul>
+<p>持续更新中…</p>
+]]></content>
+      <categories>
+        <category>应急响应</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>Web</tag>
       </tags>
   </entry>
   <entry>
@@ -172,6 +172,39 @@ f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^
       </tags>
   </entry>
   <entry>
+    <title>深度学习</title>
+    <url>/2026/05/31/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<p>简单记录一些深度学习相关知识。<br><span id="more"></span></p>
+<h1 id="感知机"><a href="#感知机" class="headerlink" title="感知机"></a>感知机</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>接受多个输入信号，输出一个信号。信号只有“流/不流“（1/0）两种状态。下图即为接受两个输入信号的状态机。<br><img src="/images/zhuangtaiji.png" alt><br>其中的$x_{1},x_{2}$分别为输入信号，$y$为输出信号，$w_{1},w_{2}$代表着权重。$\circ$被称为着“神经元”或者“节点”。输入信号被送往神经元时，会被分别乘以固定的权重即$(w_{1}x_{1},w_{2}x_{2})$。<br>神经元会计算传送过来的信号的总和，只有当这个总和超过了某个界限值时，才会输出$1$。这也称为”神经元被激活“。这里将这个界限值称为阈值，用符号$\theta$表示。用公式表示即：</p>
+<script type="math/tex; mode=display">y=\begin{cases}
+0\quad(w_{1}x_{1}+w_{2}x_{2}\leq \theta) \\
+1\quad(w_{1}x_{1}+w_{2}x_{2}>\theta)
+\end{cases}</script><p>每个输入信号都有各自的权重，权重越大，对应该权重的信号的重要性就越高。<br>将上式$\theta$换为$-b$还可写成另一种形式：</p>
+<script type="math/tex; mode=display">y=\begin{cases}
+0\quad(b+w_{1}x_{1}+w_{2}x_{2}\leq 0) \\
+1\quad(b+w_{1}x_{1}+w_{2}x_{2}>0)
+\end{cases}</script><p>其中$b$被称为偏置，偏置是调整神经元被激活的容易程度的参数。<br>可以发现上图中偏置并没有直接表示，如需明确表示偏置$b$可以如下图：<br><img src="/images/zhuangtaiji_pianzhi.png" alt></p>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不改变感知机构造，仅通过改变感知机的参数，来实现与或非等逻辑电路。如：$(w_{1},w_{2},b)=(0.5,0.5,-0.7)$可以满足与门条件。而$(w_{1},w_{2},b)=(-0.5,-0.5,0.7)$可以表示与非门。（需要注意的是，对于同一个门电路，满足条件的参数选取有无数多个）<br>简单的与门实现：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">AND</span>(<span class="params">x1, x2</span>):</span><br><span class="line">	x = np.array([x1, x2])</span><br><span class="line">	w = np.array([w1, w2])</span><br><span class="line">	b = -<span class="number">0.7</span></span><br><span class="line">	tmp = b + np.<span class="built_in">sum</span>(w * x)</span><br><span class="line">	<span class="keyword">if</span> tmp &lt;= <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h2><p>感知机无法直接实现异或门，因为感知机只能表示由一条直线分割的空间，而无法分割如图所示的非线性空间（曲线分割而成的空间称为非线性空间，由直线分割而成的空间称为线性空间）：<br><img src="/images/xorSpace.png" alt><br>虽然感知机没办法直接实现，但是感知机可以进行叠加，进行非线性的表示，间接的实现复杂的逻辑电路。如：异或门可以通过组合与门、与非门、或门实现。这种叠加了多层的感知机也称为多层感知机。</p>
+<h1 id="激活函数"><a href="#激活函数" class="headerlink" title="激活函数"></a>激活函数</h1><p>在感知机的公式中，我们可以用一个函数$h(x)$表示分情况的动作（超过0则输出1，否则输出0）。即可写作：<br>$h(x)$会将输入信号的总和转换为输出信号，这种函数一般称为激活函数（activation function）,激活函数的作用在于决定如何来激活输入信号的总和。<br>用$a=b+w_{1}x_{1}+w_{2}x_{2}$来表示中间值，便可画出明确显示激活函数的计算过程：<br><img src="/images/jihuo.png" alt></p>
+<h1 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h1><p>即便对于复杂的函数，感知机也隐含着能够表示它的可能性。即便是计算机进行的复杂处理，感知机（理论上）也可以将其表示出来。但是设定权重的工作，即确定合适的、能符合预期的输入与输出的权重还是由人工进行的，为了可以自动地从数据中学习到合适的权重参数，需要用到神经网络。<br>神经网络图示如下图，最左边的一列称为输入层，最右边的一列称为输出层，中间的一列称为中间层（也称为隐藏层）。<br><img src="/images/shenjingwangluo.png" alt><br>实际上，感知机和神经网络的主要区别就在于这个激活函数。在感知机中，常使用阶跃函数作为激活函数，而神经网络会选择其他的非线性函数作为激活函数，比如说sigmoid和Relu函数。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>首先是符号约定，上标表示权重和神经元的层号（即第1层的权重、第1层的神经元）。此外，权重的右下角有两个数字，它们是后一层的神经元和前一层的神经元的索引号。<br><img src="/images/symbol.png" alt><br>用数学式表示$a_{1}^{(1)}$，通过加权信号和偏置的和按如下方式进行计算：$a_{1}^{(1)}=w_{1 1}^{(1)}x_{1}+w_{12}^{(1)}+b_{1}^{(1)}$。显然，我们可以通过矩阵乘法的方式进行每一层的运算。令：<script type="math/tex">\mathbf{A}^{(1)}=\begin{pmatrix}a_{1}^{(1)}&a_{2}^{(1)}&a_{3}^{(1)}
+\end{pmatrix},\mathbf{X}=\begin{pmatrix}x_{1}&x_{2}
+\end{pmatrix},\mathbf{B}^{(1)}=\begin{pmatrix}b_{1}^{(1)}&b_{2}^{(1)}&b_{3}^{(1)}
+\end{pmatrix},\mathbf{W}^{(1)}=\begin{pmatrix}
+w_{11}^{(1)}&w_{21}^{(1)}&w_{31}^{(1)} \\
+w_{12}^{(1)}&w_{22}^{(1)}&w_{32}^{(1)}
+\end{pmatrix}</script><br>则有$\mathbf{A}^{(1)}=\mathbf{X}\mathbf{W}^{(1)}+\mathbf{B}^{(1)}$</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>深度学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>油醋签名系统</title>
     <url>/2025/09/02/%E6%B2%B9%E9%86%8B%E7%AD%BE%E5%90%8D%E7%B3%BB%E7%BB%9F/</url>
     <content><![CDATA[<p>今年碰到的关于油醋签名系统的题还挺多的，第一次听到油和醋的时候还感觉挺有趣的<del>（再加上盐可以做饭了）</del>。浅浅学习一下。<br><span id="more"></span></p>
@@ -230,50 +263,6 @@ B_{1}^{-1}&-B_{1}^{-1}A_{1}C_{1}^{-1}
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>深度学习</title>
-    <url>/2026/05/31/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<p>简单记录一些深度学习相关知识。<br><span id="more"></span></p>
-<h1 id="感知机"><a href="#感知机" class="headerlink" title="感知机"></a>感知机</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>接受多个输入信号，输出一个信号。信号只有“流/不流“（1/0）两种状态。下图即为接受两个输入信号的状态机。<br><img src="/images/zhuangtaiji.png" alt><br>其中的$x_{1},x_{2}$分别为输入信号，$y$为输出信号，$w_{1},w_{2}$代表着权重。$\circ$被称为着“神经元”或者“节点”。输入信号被送往神经元时，会被分别乘以固定的权重即$(w_{1}x_{1},w_{2}x_{2})$。<br>神经元会计算传送过来的信号的总和，只有当这个总和超过了某个界限值时，才会输出$1$。这也称为”神经元被激活“。这里将这个界限值称为阈值，用符号$\theta$表示。用公式表示即：</p>
-<script type="math/tex; mode=display">y=\begin{cases}
-0\quad(w_{1}x_{1}+w_{2}x_{2}\leq \theta) \\
-1\quad(w_{1}x_{1}+w_{2}x_{2}>\theta)
-\end{cases}</script><p>每个输入信号都有各自的权重，权重越大，对应该权重的信号的重要性就越高。<br>将上式$\theta$换为$-b$还可写成另一种形式：</p>
-<script type="math/tex; mode=display">y=\begin{cases}
-0\quad(b+w_{1}x_{1}+w_{2}x_{2}\leq 0) \\
-1\quad(b+w_{1}x_{1}+w_{2}x_{2}>0)
-\end{cases}</script><p>其中$b$被称为偏置，偏置是调整神经元被激活的容易程度的参数。<br>可以发现上图中偏置并没有直接表示，如需明确表示偏置$b$可以如下图：<br><img src="/images/zhuangtaiji_pianzhi.png" alt></p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不改变感知机构造，仅通过改变感知机的参数，来实现与或非等逻辑电路。如：$(w_{1},w_{2},b)=(0.5,0.5,-0.7)$可以满足与门条件。而$(w_{1},w_{2},b)=(-0.5,-0.5,0.7)$可以表示与非门。（需要注意的是，对于同一个门电路，满足条件的参数选取有无数多个）<br>简单的与门实现：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">AND</span>(<span class="params">x1, x2</span>):</span><br><span class="line">	x = np.array([x1, x2])</span><br><span class="line">	w = np.array([w1, w2])</span><br><span class="line">	b = -<span class="number">0.7</span></span><br><span class="line">	tmp = b + np.<span class="built_in">sum</span>(w * x)</span><br><span class="line">	<span class="keyword">if</span> tmp &lt;= <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span></span><br></pre></td></tr></table></figure></p>
-<h2 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h2><p>感知机无法直接实现异或门，因为感知机只能表示由一条直线分割的空间，而无法分割如图所示的非线性空间（曲线分割而成的空间称为非线性空间，由直线分割而成的空间称为线性空间）：<br><img src="/images/xorSpace.png" alt><br>虽然感知机没办法直接实现，但是感知机可以进行叠加，进行非线性的表示，间接的实现复杂的逻辑电路。如：异或门可以通过组合与门、与非门、或门实现。这种叠加了多层的感知机也称为多层感知机。</p>
-<h1 id="激活函数"><a href="#激活函数" class="headerlink" title="激活函数"></a>激活函数</h1><p>在感知机的公式中，我们可以用一个函数$h(x)$表示分情况的动作（超过0则输出1，否则输出0）。即可写作：</p>
-<script type="math/tex; mode=display">\begin{flalign}&y=h(b+w_{1}x_{1}+w_{2}x_{2}) \\ &h(x)=\begin{cases}0(x\leq 0) \\1(x>0)\end{cases} \end{flalign}$$$h(x)$会将输入信号的总和转换为输出信号，这种函数一般称为激活函数（activation function）,激活函数的作用在于决定如何来激活输入信号的总和。
-用$a=b+w_{1}x_{1}+w_{2}x_{2}$来表示中间值，便可画出明确显示激活函数的计算过程：
-![](/images/jihuo.png)
-
-# 神经网络
-即便对于复杂的函数，感知机也隐含着能够表示它的可能性。即便是计算机进行的复杂处理，感知机（理论上）也可以将其表示出来。但是设定权重的工作，即确定合适的、能符合预期的输入与输出的权重还是由人工进行的，为了可以自动地从数据中学习到合适的权重参数，需要用到神经网络。
-神经网络图示如下图，最左边的一列称为输入层，最右边的一列称为输出层，中间的一列称为中间层（也称为隐藏层）。
-![](/images/shenjingwangluo.png)
-实际上，感知机和神经网络的主要区别就在于这个激活函数。在感知机中，常使用阶跃函数作为激活函数，而神经网络会选择其他的非线性函数作为激活函数，比如说sigmoid和Relu函数。
-## 实现
-首先是符号约定，上标表示权重和神经元的层号（即第1层的权重、第1层的神经元）。此外，权重的右下角有两个数字，它们是后一层的神经元和前一层的神经元的索引号。
-![](/images/symbol.png)
-用数学式表示$a_{1}^{(1)}$，通过加权信号和偏置的和按如下方式进行计算：$a_{1}^{(1)}=w_{1 1}^{(1)}x_{1}+w_{12}^{(1)}+b_{1}^{(1)}$。显然，我们可以通过矩阵乘法的方式进行每一层的运算。令：$$\mathbf{A}^{(1)}=\begin{pmatrix}a_{1}^{(1)}&a_{2}^{(1)}&a_{3}^{(1)}
-\end{pmatrix},\mathbf{X}=\begin{pmatrix}x_{1}&x_{2}
-\end{pmatrix},\mathbf{B}^{(1)}=\begin{pmatrix}b_{1}^{(1)}&b_{2}^{(1)}&b_{3}^{(1)}
-\end{pmatrix},\mathbf{W}^{(1)}=\begin{pmatrix}
-w_{11}^{(1)}&w_{21}^{(1)}&w_{31}^{(1)} \\
-w_{12}^{(1)}&w_{22}^{(1)}&w_{32}^{(1)}
-\end{pmatrix}</script><p>则有$\mathbf{A}^{(1)}=\mathbf{X}\mathbf{W}^{(1)}+\mathbf{B}^{(1)}$</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>学习</tag>
-        <tag>深度学习</tag>
       </tags>
   </entry>
 </search>
