@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>I‘m back</title>
+    <url>/2025/05/21/I%E2%80%98m%20back/</url>
+    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
+]]></content>
+      <tags>
+        <tag>生活</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Crypto常用工具篇</title>
     <url>/2025/08/25/Crypto%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E7%AF%87/</url>
     <content><![CDATA[<p>Crypto的工具太多啦，经常想不起来一些工具是怎么使用的，这里简单记录一下一些工具的使用。<br><span id="more"></span></p>
@@ -19,15 +28,6 @@
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>I‘m back</title>
-    <url>/2025/05/21/I%E2%80%98m%20back/</url>
-    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
-]]></content>
-      <tags>
-        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -53,6 +53,30 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>应急响应</title>
+    <url>/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</url>
+    <content><![CDATA[<p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
+<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
+<ul>
+<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
+<li>WebShell能被正常解析</li>
+<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
+其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
+<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
+<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
+<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
+</ul>
+<p>持续更新中…</p>
+]]></content>
+      <categories>
+        <category>应急响应</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>Web</tag>
       </tags>
   </entry>
   <entry>
@@ -83,30 +107,6 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       </categories>
       <tags>
         <tag>生活</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>应急响应</title>
-    <url>/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</url>
-    <content><![CDATA[<p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
-<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
-<ul>
-<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
-<li>WebShell能被正常解析</li>
-<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
-其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
-<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
-<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
-<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
-</ul>
-<p>持续更新中…</p>
-]]></content>
-      <categories>
-        <category>应急响应</category>
-      </categories>
-      <tags>
-        <tag>学习</tag>
-        <tag>Web</tag>
       </tags>
   </entry>
   <entry>
