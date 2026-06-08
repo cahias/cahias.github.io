@@ -27,19 +27,22 @@
 <meta property="og:site_name" content="N1gh7ma12e的小站">
 <meta property="og:description" content="简单记录一些深度学习相关知识。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://n1gh7ma12e.cn/images/machinieLearning.png">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/zhuangtaiji.png">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/zhuangtaiji_pianzhi.png">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/xorSpace.png">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/jihuo.png">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/shenjingwangluo.png">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/symbol.png">
+<meta property="og:image" content="http://n1gh7ma12e.cn/images/hengdeng.png">
+<meta property="og:image" content="http://n1gh7ma12e.cn/images/softmax.png">
 <meta property="article:published_time" content="2026-05-30T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-06-08T05:00:11.750Z">
+<meta property="article:modified_time" content="2026-06-08T07:39:10.670Z">
 <meta property="article:author" content="N1gh7ma12e">
 <meta property="article:tag" content="学习">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://n1gh7ma12e.cn/images/zhuangtaiji.png">
+<meta name="twitter:image" content="http://n1gh7ma12e.cn/images/machinieLearning.png">
 
 <link rel="canonical" href="http://n1gh7ma12e.cn/2026/05/31/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">
 
@@ -238,7 +241,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-06-08 13:00:11" itemprop="dateModified" datetime="2026-06-08T13:00:11+08:00">2026-06-08</time>
+                <time title="修改时间：2026-06-08 15:39:10" itemprop="dateModified" datetime="2026-06-08T15:39:10+08:00">2026-06-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -256,14 +259,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.2k</span>
+              <span>4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>7 分钟</span>
             </span>
 
         </div>
@@ -276,7 +279,9 @@
 
       
         <p>简单记录一些深度学习相关知识。<br><span id="more"></span></p>
-<h1 id="感知机"><a href="#感知机" class="headerlink" title="感知机"></a>感知机</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>接受多个输入信号，输出一个信号。信号只有“流/不流“（1/0）两种状态。下图即为接受两个输入信号的状态机。<br><img src="/images/zhuangtaiji.png" alt><br>其中的$x_{1},x_{2}$分别为输入信号，$y$为输出信号，$w_{1},w_{2}$代表着权重。$\circ$被称为着“神经元”或者“节点”。输入信号被送往神经元时，会被分别乘以固定的权重即$(w_{1}x_{1},w_{2}x_{2})$。<br>神经元会计算传送过来的信号的总和，只有当这个总和超过了某个界限值时，才会输出$1$。这也称为”神经元被激活“。这里将这个界限值称为阈值，用符号$\theta$表示。用公式表示即：</p>
+<h1 id="机器学习与深度学习"><a href="#机器学习与深度学习" class="headerlink" title="机器学习与深度学习"></a>机器学习与深度学习</h1><p>通常要解决某个问题，特别是需要发现某种模式时，人们一般会综合考虑各种因素后再给出回答。人们以自己的经验和直觉为线索，通过反复试验推进工作。而机器学习的方法则极力避免人为介入，机器学习的方法中，由机器从收集到的数据中找出规律性。与从零开始想出算法相比，这种方法可以更高效地解决问题，也能减轻人的负担。但是需要注意的是，将图像转换为向量时使用的特征量仍是由人设计的。对于不同的问题，必须使用合适的特征量（必须设计专门的特征量），才能得到好的结果。<br>深度学习则比以往的机器学习方法更能避免人为介入，神经网络直接学习图像本身。利用特征量和机器学习的方法中，特征量仍是由人工设计的，而在神经网络中，连图像中包含的重要特征量也都是由机器来学习的。所以深度学习有时也称为端到端机器学习（endtoend machinelearning）。这里所说的端到端是指从一端到另一端的意思，也就是从原始数据（输入）中获得目标结果（输出）的意思。<br><img src="/images/machinieLearning.png" alt></p>
+<p>机器学习的最终目标是获得泛化能力（处理未被观察过的数据的能力）。在机器学习中，一般将数据分为训练数据和测试数据两部分来进行学习和实验等。首先，使用训练数据进行学习，寻找最优的参数；然后，使用测试数据评价训练得到的模型的实际能力。<br>需要注意的是，只用一个数据集去学习和评价参数是无法进行正确评价的。这样会导致可以顺利地处理某个数据集，但无法处理其他数据集的情况（这种只对某个数据集过度拟合和的状态叫过拟合）。<br>接下来，会从深度学习基本概念开始，逐渐学习介绍。</p>
+<h1 id="感知机"><a href="#感知机" class="headerlink" title="感知机"></a>感知机</h1><p>接受多个输入信号，输出一个信号。信号只有“流/不流“（1/0）两种状态。下图即为接受两个输入信号的状态机。<br><img src="/images/zhuangtaiji.png" alt><br>其中的$x_{1},x_{2}$分别为输入信号，$y$为输出信号，$w_{1},w_{2}$代表着权重。$\circ$被称为着“神经元”或者“节点”。输入信号被送往神经元时，会被分别乘以固定的权重即$(w_{1}x_{1},w_{2}x_{2})$。<br>神经元会计算传送过来的信号的总和，只有当这个总和超过了某个界限值时，才会输出$1$。这也称为”神经元被激活“。这里将这个界限值称为阈值，用符号$\theta$表示。用公式表示即：</p>
 <script type="math/tex; mode=display">y=\begin{cases}
 0\quad(w_{1}x_{1}+w_{2}x_{2}\leq \theta) \\
 1\quad(w_{1}x_{1}+w_{2}x_{2}>\theta)
@@ -288,7 +293,7 @@
 <h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不改变感知机构造，仅通过改变感知机的参数，来实现与或非等逻辑电路。如：$(w_{1},w_{2},b)=(0.5,0.5,-0.7)$可以满足与门条件。而$(w_{1},w_{2},b)=(-0.5,-0.5,0.7)$可以表示与非门。（需要注意的是，对于同一个门电路，满足条件的参数选取有无数多个）<br>简单的与门实现：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">AND</span>(<span class="params">x1, x2</span>):</span><br><span class="line">	x = np.array([x1, x2])</span><br><span class="line">	w = np.array([w1, w2])</span><br><span class="line">	b = -<span class="number">0.7</span></span><br><span class="line">	tmp = b + np.<span class="built_in">sum</span>(w * x)</span><br><span class="line">	<span class="keyword">if</span> tmp &lt;= <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span></span><br></pre></td></tr></table></figure></p>
 <h2 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h2><p>感知机无法直接实现异或门，因为感知机只能表示由一条直线分割的空间，而无法分割如图所示的非线性空间（曲线分割而成的空间称为非线性空间，由直线分割而成的空间称为线性空间）：<br><img src="/images/xorSpace.png" alt><br>虽然感知机没办法直接实现，但是感知机可以进行叠加，进行非线性的表示，间接的实现复杂的逻辑电路。如：异或门可以通过组合与门、与非门、或门实现。这种叠加了多层的感知机也称为多层感知机。</p>
 <h1 id="激活函数"><a href="#激活函数" class="headerlink" title="激活函数"></a>激活函数</h1><p>在感知机的公式中，我们可以用一个函数$h(x)$表示分情况的动作（超过0则输出1，否则输出0）。即可写作：</p>
-<script type="math/tex; mode=display">y=h(b+w_{1}x_{1}+w_{2}x_{2})\\ h(x)=\begin{cases}0(x\leq 0)\\1(x>0)\end{cases}</script><p>$h(x)$会将输入信号的总和转换为输出信号，这种函数一般称为激活函数（activation function）,激活函数的作用在于决定如何来激活输入信号的总和。<br>用$a=b+w_{1}x_{1}+w_{2}x_{2}$来表示中间值，便可画出明确显示激活函数的计算过程：<br><img src="/images/jihuo.png" alt></p>
+<script type="math/tex; mode=display">\begin{align}&y=h(b+w_{1}x_{1}+w_{2}x_{2})\\ &h(x)=\begin{cases}0(x\leq 0)\\1(x>0)\end{cases}\end{align}</script><p>$h(x)$会将输入信号的总和转换为输出信号，这种函数一般称为激活函数（activation function）,激活函数的作用在于决定如何来激活输入信号的总和。<br>用$a=b+w_{1}x_{1}+w_{2}x_{2}$来表示中间值，便可画出明确显示激活函数的计算过程：<br><img src="/images/jihuo.png" alt></p>
 <h1 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h1><p>即便对于复杂的函数，感知机也隐含着能够表示它的可能性。即便是计算机进行的复杂处理，感知机（理论上）也可以将其表示出来。但是设定权重的工作，即确定合适的、能符合预期的输入与输出的权重还是由人工进行的，为了可以自动地从数据中学习到合适的权重参数，需要用到神经网络。<br>神经网络图示如下图，最左边的一列称为输入层，最右边的一列称为输出层，中间的一列称为中间层（也称为隐藏层）。<br><img src="/images/shenjingwangluo.png" alt><br>实际上，感知机和神经网络的主要区别就在于这个激活函数。在感知机中，常使用阶跃函数作为激活函数，而神经网络会选择其他的非线性函数作为激活函数，比如说sigmoid和Relu函数。</p>
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>首先是符号约定，上标表示权重和神经元的层号（即第1层的权重、第1层的神经元）。此外，权重的右下角有两个数字，它们是后一层的神经元和前一层的神经元的索引号。<br><img src="/images/symbol.png" alt><br>用数学式表示$a_{1}^{(1)}$，通过加权信号和偏置的和按如下方式进行计算：$a_{1}^{(1)}=w_{1 1}^{(1)}x_{1}+w_{12}^{(1)}+b_{1}^{(1)}$。显然，我们可以通过矩阵乘法的方式进行每一层的运算。令：<script type="math/tex">\mathbf{A}^{(1)}=\begin{pmatrix}a_{1}^{(1)}&a_{2}^{(1)}&a_{3}^{(1)}
 \end{pmatrix},\mathbf{X}=\begin{pmatrix}x_{1}&x_{2}
@@ -296,7 +301,11 @@
 \end{pmatrix},\mathbf{W}^{(1)}=\begin{pmatrix}
 w_{11}^{(1)}&w_{21}^{(1)}&w_{31}^{(1)} \\
 w_{12}^{(1)}&w_{22}^{(1)}&w_{32}^{(1)}
-\end{pmatrix}</script><br>则有$\mathbf{A}^{(1)}=\mathbf{X}\mathbf{W}^{(1)}+\mathbf{B}^{(1)}$</p>
+\end{pmatrix}</script><br>则有$\mathbf{A}^{(1)}=\mathbf{X}\mathbf{W}^{(1)}+\mathbf{B}^{(1)}$，此后$\mathbf{A}$会经由激活函数$h()$，转化为该层最终结果$\mathbf{Z}$。<br>用python实现：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">X = np.array([x1, x2])</span><br><span class="line">W1 = np.array([w11, w21, w31], [w12, w22, w32])</span><br><span class="line">B1 = np.array([b1, b2, b3])</span><br><span class="line">A1 = np.dot(X, W1) + B1</span><br><span class="line">Z1 = h(A1)</span><br></pre></td></tr></table></figure></p>
+<h2 id="输出层设计"><a href="#输出层设计" class="headerlink" title="输出层设计"></a>输出层设计</h2><p>神经网络可以用在分类问题和回归问题上，不过需要根据情况改变输出层的激活函数。一般而言，回归问题用恒等函数，分类问题用softmax函数。输出层的神经元数量需要根据待解决的问题来决定。对于分类问题，输出层的神经元数量一般设定为类别的数量。</p>
+<h3 id="恒等函数"><a href="#恒等函数" class="headerlink" title="恒等函数"></a>恒等函数</h3><p>恒等函数会将输入按原样输出，对于输入的信息，不加以任何改动地直接输出。因此，在输出层使用恒等函数时，输入信号会原封不动地被输出。如下图：<br><img src="/images/hengdeng.png" alt></p>
+<h3 id="softmax函数"><a href="#softmax函数" class="headerlink" title="softmax函数"></a>softmax函数</h3><p>分类问题中假设输出层共有n个神经元，计算第$k$个神经元的输出$y_{k}$。第$k$个输入信号为$a_{k}$。<br>softmax函数为：$y_{k}=\frac{\exp(a_{k})}{\sum_{i=1}^{n}\exp(a_{i})}$。输出层的各个神经元都受到所有输入信号的影响。如图：<br><img src="/images/softmax.png" alt><br>在计算机运算中，softmax函数的实现中要进行指数函数的运算，容易出现溢出。所以需要对式子进行变形：</p>
+<script type="math/tex; mode=display">y_{k}=\frac{\exp(a_{k})}{\sum_{i=1}^{n}\exp(a_{i})}=\frac{C\exp(a_{k})}{C\sum_{i=1}^{n}\exp(a_{i})}=\frac{\exp(a_{k}+\log C)}{\sum_{i=1}^{n}\exp(a_{i}+\log C)}</script><p>可以看出，在进行softmax的指数函数的运算时，加上（或者减去）某个常数并不会改变运算的结果。所以一般会减去输入信号中的最大值以确保运算不会溢出。实现如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">softmax</span>(<span class="params">a</span>):</span><br><span class="line">	c = np.<span class="built_in">max</span>(a)</span><br><span class="line">	exp_a = np.exp(a - c)</span><br><span class="line">	sum_exp_a = np.<span class="built_in">sum</span>(exp_a)</span><br><span class="line">	y = exp_a / sum_exp_a</span><br><span class="line">	<span class="keyword">return</span> y</span><br></pre></td></tr></table></figure><br>softmax函数的输出是0到1之间的实数。并且，softmax函数的输出值的总和是1。正因如此，我们才可以把softmax函数的输出解释为“概率”。<br>这里需要注意的是，即便使用了softmax函数，各个元素之间的大小关系也不会改变。一般而言，神经网络只把输出值最大的神经元所对应的类别作为识别结果。使用softmax函数，输出值最大的神经元的位置并不会变，所以，在实际的问题中，由于指数函数的运算需要一定的计算机运算量，因此输出层的softmax函数一般会被省略。</p>
 
     </div>
 
@@ -378,7 +387,7 @@ w_{12}^{(1)}&w_{22}^{(1)}&w_{32}^{(1)}
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%84%9F%E7%9F%A5%E6%9C%BA"><span class="nav-number">1.</span> <span class="nav-text">感知机</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">1.3.</span> <span class="nav-text">局限性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">激活函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">3.</span> <span class="nav-text">神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.</span> <span class="nav-text">实现</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.</span> <span class="nav-text">机器学习与深度学习</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%84%9F%E7%9F%A5%E6%9C%BA"><span class="nav-number">2.</span> <span class="nav-text">感知机</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8"><span class="nav-number">2.1.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text">局限性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">激活函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">4.</span> <span class="nav-text">神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.1.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E5%B1%82%E8%AE%BE%E8%AE%A1"><span class="nav-number">4.2.</span> <span class="nav-text">输出层设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%81%92%E7%AD%89%E5%87%BD%E6%95%B0"><span class="nav-number">4.2.1.</span> <span class="nav-text">恒等函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#softmax%E5%87%BD%E6%95%B0"><span class="nav-number">4.2.2.</span> <span class="nav-text">softmax函数</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -451,12 +460,12 @@ w_{12}^{(1)}&w_{22}^{(1)}&w_{32}^{(1)}
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">27k</span>
+    <span title="站点总字数">29k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">49 分钟</span>
+    <span title="站点阅读时长">52 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
