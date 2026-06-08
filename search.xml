@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>I‘m back</title>
-    <url>/2025/05/21/I%E2%80%98m%20back/</url>
-    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
-]]></content>
-      <tags>
-        <tag>生活</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Crypto常用工具篇</title>
     <url>/2025/08/25/Crypto%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E7%AF%87/</url>
     <content><![CDATA[<p>Crypto的工具太多啦，经常想不起来一些工具是怎么使用的，这里简单记录一下一些工具的使用。<br><span id="more"></span></p>
@@ -28,6 +19,15 @@
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>I‘m back</title>
+    <url>/2025/05/21/I%E2%80%98m%20back/</url>
+    <content><![CDATA[<p>自上次不小心把docker容器关掉致使blog寄了之后，我决定抛弃笨重的wordpress，转而使用hexo。可由于种种原因，一直没有重新搭建我的blog。（本来打算考完研再搭建来着）<br><span id="more"></span><br>今天一时兴起，决定不在拖了，就把blog给重构了。可惜以前的数据都存在了云服务器上，没有保存就到期了QAQ<br>作为本blog的第一篇内容，主要介绍一下近期在干的事情及准备干的事。<br>现在我已经大三下了（时间还真快），由于密码不太好找工作，以及我想多点时间研究研究我喜欢的东西（顺便水个文凭），我决定考研。所以在最近一段时间基本处于半退役状态，偶尔打打比赛。重点放在考研上（高数，英语，408好难啊QAQ）。近期的文章内容可能大多是考研相关或者生活相关（也有可能又要鸽了），偶尔会更新一些最近打的一些比赛的wp。<br>考完研过后，我可能会去学学渗透、二进制的内容（我也想当大黑阔），有机会的话希望研究生能研究这方面。至于密码….将是闲暇时的玩物。<br>思来想去，好像也没啥想说的了，就这样吧。<br>希望一切顺利。</p>
+]]></content>
+      <tags>
+        <tag>生活</tag>
       </tags>
   </entry>
   <entry>
@@ -248,7 +248,7 @@ B_{1}^{-1}&-B_{1}^{-1}A_{1}C_{1}^{-1}
 <h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不改变感知机构造，仅通过改变感知机的参数，来实现与或非等逻辑电路。如：$(w_{1},w_{2},b)=(0.5,0.5,-0.7)$可以满足与门条件。而$(w_{1},w_{2},b)=(-0.5,-0.5,0.7)$可以表示与非门。（需要注意的是，对于同一个门电路，满足条件的参数选取有无数多个）<br>简单的与门实现：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">AND</span>(<span class="params">x1, x2</span>):</span><br><span class="line">	x = np.array([x1, x2])</span><br><span class="line">	w = np.array([w1, w2])</span><br><span class="line">	b = -<span class="number">0.7</span></span><br><span class="line">	tmp = b + np.<span class="built_in">sum</span>(w * x)</span><br><span class="line">	<span class="keyword">if</span> tmp &lt;= <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span></span><br></pre></td></tr></table></figure></p>
 <h2 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h2><p>感知机无法直接实现异或门，因为感知机只能表示由一条直线分割的空间，而无法分割如图所示的非线性空间（曲线分割而成的空间称为非线性空间，由直线分割而成的空间称为线性空间）：<br><img src="/images/xorSpace.png" alt><br>虽然感知机没办法直接实现，但是感知机可以进行叠加，进行非线性的表示，间接的实现复杂的逻辑电路。如：异或门可以通过组合与门、与非门、或门实现。这种叠加了多层的感知机也称为多层感知机。</p>
 <h1 id="激活函数"><a href="#激活函数" class="headerlink" title="激活函数"></a>激活函数</h1><p>在感知机的公式中，我们可以用一个函数$h(x)$表示分情况的动作（超过0则输出1，否则输出0）。即可写作：</p>
-<script type="math/tex; mode=display">y=h(b+w_{1}x_{1}+w_{2}x_{2})$$ $$h(x)=\begin{cases}0(x\leq 0)\\1(x>0)\end{cases}</script><p>$h(x)$会将输入信号的总和转换为输出信号，这种函数一般称为激活函数（activation function）,激活函数的作用在于决定如何来激活输入信号的总和。<br>用$a=b+w_{1}x_{1}+w_{2}x_{2}$来表示中间值，便可画出明确显示激活函数的计算过程：<br><img src="/images/jihuo.png" alt></p>
+<script type="math/tex; mode=display">y=h(b+w_{1}x_{1}+w_{2}x_{2})\\ h(x)=\begin{cases}0(x\leq 0)\\1(x>0)\end{cases}</script><p>$h(x)$会将输入信号的总和转换为输出信号，这种函数一般称为激活函数（activation function）,激活函数的作用在于决定如何来激活输入信号的总和。<br>用$a=b+w_{1}x_{1}+w_{2}x_{2}$来表示中间值，便可画出明确显示激活函数的计算过程：<br><img src="/images/jihuo.png" alt></p>
 <h1 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h1><p>即便对于复杂的函数，感知机也隐含着能够表示它的可能性。即便是计算机进行的复杂处理，感知机（理论上）也可以将其表示出来。但是设定权重的工作，即确定合适的、能符合预期的输入与输出的权重还是由人工进行的，为了可以自动地从数据中学习到合适的权重参数，需要用到神经网络。<br>神经网络图示如下图，最左边的一列称为输入层，最右边的一列称为输出层，中间的一列称为中间层（也称为隐藏层）。<br><img src="/images/shenjingwangluo.png" alt><br>实际上，感知机和神经网络的主要区别就在于这个激活函数。在感知机中，常使用阶跃函数作为激活函数，而神经网络会选择其他的非线性函数作为激活函数，比如说sigmoid和Relu函数。</p>
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>首先是符号约定，上标表示权重和神经元的层号（即第1层的权重、第1层的神经元）。此外，权重的右下角有两个数字，它们是后一层的神经元和前一层的神经元的索引号。<br><img src="/images/symbol.png" alt><br>用数学式表示$a_{1}^{(1)}$，通过加权信号和偏置的和按如下方式进行计算：$a_{1}^{(1)}=w_{1 1}^{(1)}x_{1}+w_{12}^{(1)}+b_{1}^{(1)}$。显然，我们可以通过矩阵乘法的方式进行每一层的运算。令：<script type="math/tex">\mathbf{A}^{(1)}=\begin{pmatrix}a_{1}^{(1)}&a_{2}^{(1)}&a_{3}^{(1)}
 \end{pmatrix},\mathbf{X}=\begin{pmatrix}x_{1}&x_{2}
