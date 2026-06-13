@@ -195,6 +195,121 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://n1gh7ma12e.cn/2026/06/09/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="N1gh7ma12e">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="N1gh7ma12e的小站">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2026/06/09/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part2/" class="post-title-link" itemprop="url">深度学习--part2</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2026-06-09 00:00:00" itemprop="dateCreated datePublished" datetime="2026-06-09T00:00:00+08:00">2026-06-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-06-13 17:12:21" itemprop="dateModified" datetime="2026-06-13T17:12:21+08:00">2026-06-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="梯度法"><a href="#梯度法" class="headerlink" title="梯度法"></a>梯度法</h1><p>机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。<br>通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。<br>需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最小值或者真正应该前进的方向。实际上，在复杂的函数中，梯度指示的方向基本上都不是函数值最小处。<br>虽然梯度的方向并不一定指向最小值，但沿着它的方向能够最大限度地减小函数的值。因此，在寻找函数的最小值（或者尽可能小的值）的位置的任务中，要以梯度的信息为线索，决定前进的方向。梯度法会不断沿梯度方向前进，逐渐减小函数值，从而寻找到尽可能小的值。<br>用数学式表示梯度法：</p>
+<script type="math/tex; mode=display">\begin{align}
+x_{0}=x_{0}-\eta  \frac{\partial f}{\partial x_{0}} \\
+x_{1}=x_{1}-\eta  \frac{\partial f}{\partial x_{1}}
+\end{align}</script><p>上式表示了更新一次的值，这个步骤会在学习中反复执行（上式为两个变量的情况，增多变量的数量式子与之类似）。其中的$\eta$表示更新量，在神经网络的学习中，又称为学习率。<br>学习率决定在一次学习中，应该学习多少，以及在多大程度上更新参数。学习率需要事先设定好为某个值，一般而言，这个值过大或过小，都无法抵达一个“好的位置”。(像学习率这样的参数称为超参数。这是一种和神经网络的参数（权重和偏置）性质不同的参数，学习率这样的超参数则是人工设定的。一般来说，超参数需要尝试多个值，以便找到一种可以使学习顺利进行的设定）。<br>用python实现即：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">gradient_descent</span>(<span class="params">f, init_x, lr=<span class="number">0.01</span>, step_num=<span class="number">100</span></span>):</span><br><span class="line">	x = init_x</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> (step_num):</span><br><span class="line">		grad = numerical_gradient(f, x)</span><br><span class="line">		x -= lr * grad</span><br><span class="line">	<span class="keyword">return</span> x</span><br></pre></td></tr></table></figure></p>
+<h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>神经网络整体学习步骤如下：</p>
+<ul>
+<li>前提：神经网络存在合适的权重和偏置，调整权重和偏置以便拟合训练数据的过程称为“学习”。神经网络的学习分成下面4个步骤。</li>
+<li>步骤1（mini-batch）：从训练数据中随机选出一部分数据，这部分数据称为mini-batch。我们的目标是减少mini-batch的损失函数的值。</li>
+<li>步骤2（计算梯度）：为了减小mini-batch的损失函数的值，需要求出各个权重参数的梯度。梯度表示损失函数的值减小最多的方向。</li>
+<li>步骤3（更新参数）：将权重参数沿梯度方向进行微小的更新。</li>
+<li>步骤4（重复）：重复步骤1，2，3<br>神经网络的学习按照上面4个步骤进行。这个方法通过梯度下降法更新参数，不过因为这里使用的数据是随机选择的mini batch数据，所以又称为随机梯度下降法（SGD） 。<br>假设总数据量为60000，mini-batch的大小为100，则每一次训练中会从60000个训练数据中随机取出100个数据（图像数据和正确解标签数据），然后，对这个包含100笔数据的mini-batch求梯度，使用随机梯度下降法更新参数。在更新过程中，损失函数图像将会出现逐渐下降的趋势：<br><img src="/images/loss.png" alt><br>这意味着学习在正常的进行，表示神经网络的权重参数在逐渐拟合数据。不过这个损失函数的值，严格地讲是“对训练数据的某个mini-batch的损失函数”的值。训练数据的损失函数值减小，虽说是神经网络的学习正常进行的一个信号，但光看这个结果还不能说明该神经网络在其他数据集上也一定能有同等程度的表现。<br>神经网络的学习中，必须确认是否能够正确识别训练数据以外的其他数据，即确认是否会发生过拟合。所以需要定期地对训练数据和测试数据记录识别精度，一般是每经过一个epoch（一个 epoch 表示学习中所有训练数据均被使用过一次时的更新次数。比如，对于10000笔训练数据，用大小为100笔数据的mini-batch进行学习时，重复随机梯度下降法100次，所有的训练数据就都被“看过”了 。此时，100次就是一个epoch）记录一次。图像大致如下：<br><img src="/images/acc.png" alt><br>实线表示训练数据的识别精度，虚线表示测试数据的识别精度。图中，随epoch的前进，二者识别精度都提高了，且识别精度上基本没差异，则可以说明没有出现过拟合现象。<h1 id="误差反向传播法"><a href="#误差反向传播法" class="headerlink" title="误差反向传播法"></a>误差反向传播法</h1>先前我们是通过数值微分的方法来计算神经网络的权重参数的梯度，实现虽然简单，但是计算上会费时。我们需要更高效的计算权重参数的梯度，所以需要使用误差反向传播法。<h2 id="计算图"><a href="#计算图" class="headerlink" title="计算图"></a>计算图</h2>计算图通过节点和箭头表示计算过程，将计算的中间结果写在箭头的上方，表示各个节点的计算结果从左向右传递。以下述问题为示例：<br>太郎在超市买了2个苹果、3个橘子。其中，苹果每个100日元，橘子每个150日元。消费税是10%，请计算支付金额。<br>用计算图可以表示为：<br><img src="/images/jisuantu.png" alt><br>如图中从左向右进行计算，即为一种正方向上的传播，简称为正向传播。正向传播是从计算图出发点到结束点的传播。同样的，考虑反向（从图上看的话，就是从右向左）的传播。实际上，这种传播称为反向传播。<br>计算图的特征是可以通过传递“局部计算”获得最终结果（局部计算是指，无论全局发生了什么，都能只根据与自己相关的信息输出接下来的结果）。<br>比如超市买了2个苹果和其他很多东西。此时，可以画出如图所示的计算图：<br><img src="/images/jubujisuan.png" alt><br>这里的重点是，各个节点处的计算都是局部计算。这意味着，例如苹果和其他很多东西的求和运算并不关心4000这个数字是如何计算而来的，只要把两个数字相加就可以了。也就是说，无论全局的计算多么复杂，各个步骤要做的只是对对象节点的局部计算，通过传递它的计算结果，获得全局的复杂计算的结果。<br>此外，使用计算图可以通过反向传播高效计算导数。首先得需要理解计算图反向传播的计算，举个使用计算图的反向传播的例子：<br><img src="/images/fanxiang.png" alt><br>反向传播的计算顺序是，将节点输入信号乘以节点的局部导数（偏导数），然后将结果传递给下一个节点。比如，反向传播时，平方运算的节点输入为$\frac{\partial z}{\partial z}$，将其乘上局部导数$\frac{\partial z}{\partial t}$，然后传递给下一个节点。最终传递到最左侧上方结果即为$\frac{\partial z}{\partial z}\frac{\partial z}{\partial t}\frac{\partial t}{\partial x}=\frac{\partial z}{\partial x}$。<br>基于此运算规则，不难得知，加法的反向传播即是将输入原封不动传给下一节点。<br>对于乘法，考虑$z=xy$，导数式则为：<script type="math/tex; mode=display">\begin{align}
+\frac{\partial z}{\partial x}=y \\
+\frac{\partial z}{\partial y}=x
+\end{align}</script>计算图则如下图：<br><img src="/images/timescal.png" alt><br>也不难发现，只需将正向传播的输入信号翻转后相乘即可。<br>再来考虑购买苹果的例子：<br>太郎在超市买了2个100日元一个的苹果，消费税是 10%，请计算支付金额，及苹果价格、个数、消费税的上涨会在多大程度上影响最终的支付金额。<br>这里我们要求的苹果价格的上涨会在多大程度上影响最终的支付金额，即求“支付金额关于苹果的价格的导数“。设苹果的价格为$x$，支付金额为$L$，则相当于求$\frac{\partial L}{\partial x}$。这个导数的值表示当苹果的价格稍微上涨时，支付金额会增加多少。求解则如图：<br><img src="/images/fanxiangexample.png" alt><br>图中结果可知，苹果的价格的导数是2.2，苹果的个数的导数是110，消费税的导数是200。这可以解释为，如果消费税和苹果的价格增加相同的值，则消费税将对最终价格产生200倍大小的影响，苹果的价格将产生2.2倍大小的影响。这样我们便将导数和计算图联系了起来。<br>类似的，我们也可以将反向传播法用于神经网络。为方便理解运算，会分开各层分别介绍。<h2 id="激活函数层"><a href="#激活函数层" class="headerlink" title="激活函数层"></a>激活函数层</h2>激活函数层，实质是叠加了函数$h()$，将输入信号的总和转换为输出信号。所以需对各种不同函数进行讨论。<h3 id="ReLU函数"><a href="#ReLU函数" class="headerlink" title="ReLU函数"></a>ReLU函数</h3>激活函数ReLU（Rectified Linear Unit ）由下式表示：<script type="math/tex; mode=display">y=\begin{cases}
+x&(x>0) \\
+0&(x\leq 0)
+\end{cases}</script>可以得知$y$对$x$的导数：<script type="math/tex; mode=display">\frac{\partial y}{\partial x}=\begin{cases}
+1&(x>0) \\
+0&(x\leq 0)
+\end{cases}</script>计算图表示为：<br><img src="/images/Relu.png" alt><br>用python实现即为：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Relu</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">		<span class="variable language_">self</span>.mask = <span class="literal">None</span></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">		<span class="variable language_">self</span>.mask = (x &lt;= <span class="number">0</span>)</span><br><span class="line">		out = x.copy()</span><br><span class="line">		out[<span class="variable language_">self</span>.mask] = <span class="number">0</span></span><br><span class="line">		<span class="keyword">return</span> out</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, dout</span>):</span><br><span class="line">		dout[<span class="variable language_">self</span>.mask] = <span class="number">0</span></span><br><span class="line">		dx = dout</span><br><span class="line">		<span class="keyword">return</span> dx</span><br><span class="line">	</span><br></pre></td></tr></table></figure>
+<h3 id="sigmoid函数"><a href="#sigmoid函数" class="headerlink" title="sigmoid函数"></a>sigmoid函数</h3>sigmoid 函数由下式表示：<script type="math/tex; mode=display">y=\frac{1}{1+\exp(-x)}</script>分步对sigmoid函数计算导数，可表示为如下计算图：<br><img src="/images/sigmoid.png" alt><br>即最终的导数为$\frac{\partial L}{\partial y}y^{2}\exp(-x)$，进一步整理可以得到：<script type="math/tex; mode=display">\begin{align}
+\frac{\partial L}{\partial y}y^{2}\exp(-x)&=\frac{\partial L}{\partial y} \frac{1}{(1+\exp(-x))^{2}}\exp(-x) \\
+&=\frac{\partial L}{\partial y} \frac{1}{1+\exp(-x)} \frac{\exp(-x)}{1+\exp(-x)} \\
+&=\frac{\partial L}{\partial y}y(1-y)
+\end{align}</script>最终计算图表示如下：<br><img src="/images/allsigmoid.png" alt><br>用python实现即为：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Sigmoid</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">		<span class="variable language_">self</span>.out = <span class="literal">None</span></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">		out = <span class="number">1</span> / (<span class="number">1</span> + np.exp(-x))</span><br><span class="line">		<span class="variable language_">self</span>.out = out</span><br><span class="line">		<span class="keyword">return</span> out</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, dout</span>):</span><br><span class="line">		dx = dout * (<span class="number">1.0</span> - <span class="variable language_">self</span>.out) * <span class="variable language_">self</span>.out</span><br><span class="line">		<span class="keyword">return</span> dx</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://n1gh7ma12e.cn/2026/05/31/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1004,7 +1119,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1061,12 +1176,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">30k</span>
+    <span title="站点总字数">34k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">55 分钟</span>
+    <span title="站点阅读时长">1:03</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
