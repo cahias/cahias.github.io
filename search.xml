@@ -56,6 +56,30 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       </tags>
   </entry>
   <entry>
+    <title>应急响应</title>
+    <url>/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</url>
+    <content><![CDATA[<p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
+<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
+<ul>
+<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
+<li>WebShell能被正常解析</li>
+<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
+其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
+<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
+<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
+<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
+</ul>
+<p>持续更新中…</p>
+]]></content>
+      <categories>
+        <category>应急响应</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>Web</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>年度总结</title>
     <url>/2025/12/31/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<p>一转眼2025都结束了，想了想今年都干了什么，却发现啥都想不起来了。我只能靠着翻着相册去回忆一下今年干过的事情。<br><span id="more"></span></p>
@@ -83,30 +107,6 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       </categories>
       <tags>
         <tag>生活</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>应急响应</title>
-    <url>/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</url>
-    <content><![CDATA[<p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
-<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
-<ul>
-<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
-<li>WebShell能被正常解析</li>
-<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
-其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
-<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
-<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
-<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
-</ul>
-<p>持续更新中…</p>
-]]></content>
-      <categories>
-        <category>应急响应</category>
-      </categories>
-      <tags>
-        <tag>学习</tag>
-        <tag>Web</tag>
       </tags>
   </entry>
   <entry>
@@ -281,7 +281,8 @@ w_{12}^{(1)}&w_{22}^{(1)}&w_{32}^{(1)}
   <entry>
     <title>深度学习--part2</title>
     <url>/2026/06/09/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part2/</url>
-    <content><![CDATA[<h1 id="梯度法"><a href="#梯度法" class="headerlink" title="梯度法"></a>梯度法</h1><p>机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。<br>通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。<br>需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最小值或者真正应该前进的方向。实际上，在复杂的函数中，梯度指示的方向基本上都不是函数值最小处。<br>虽然梯度的方向并不一定指向最小值，但沿着它的方向能够最大限度地减小函数的值。因此，在寻找函数的最小值（或者尽可能小的值）的位置的任务中，要以梯度的信息为线索，决定前进的方向。梯度法会不断沿梯度方向前进，逐渐减小函数值，从而寻找到尽可能小的值。<br>用数学式表示梯度法：</p>
+    <content><![CDATA[<p>这是深度学习的第二篇～<br><span id="more"></span></p>
+<h1 id="梯度法"><a href="#梯度法" class="headerlink" title="梯度法"></a>梯度法</h1><p>机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。<br>通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。<br>需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最小值或者真正应该前进的方向。实际上，在复杂的函数中，梯度指示的方向基本上都不是函数值最小处。<br>虽然梯度的方向并不一定指向最小值，但沿着它的方向能够最大限度地减小函数的值。因此，在寻找函数的最小值（或者尽可能小的值）的位置的任务中，要以梯度的信息为线索，决定前进的方向。梯度法会不断沿梯度方向前进，逐渐减小函数值，从而寻找到尽可能小的值。<br>用数学式表示梯度法：</p>
 <script type="math/tex; mode=display">\begin{align}
 x_{0}=x_{0}-\eta  \frac{\partial f}{\partial x_{0}} \\
 x_{1}=x_{1}-\eta  \frac{\partial f}{\partial x_{1}}

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"n1gh7ma12e.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="梯度法机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最">
+  <meta name="description" content="这是深度学习的第二篇～">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深度学习--part2">
 <meta property="og:url" content="http://n1gh7ma12e.cn/2026/06/09/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part2/index.html">
 <meta property="og:site_name" content="N1gh7ma12e的小站">
-<meta property="og:description" content="梯度法机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最">
+<meta property="og:description" content="这是深度学习的第二篇～">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/loss.png">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/acc.png">
@@ -38,7 +38,7 @@
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/sigmoid.png">
 <meta property="og:image" content="http://n1gh7ma12e.cn/images/allsigmoid.png">
 <meta property="article:published_time" content="2026-06-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-06-13T09:12:21.820Z">
+<meta property="article:modified_time" content="2026-06-13T09:24:48.420Z">
 <meta property="article:author" content="N1gh7ma12e">
 <meta property="article:tag" content="学习">
 <meta property="article:tag" content="深度学习">
@@ -242,7 +242,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-06-13 17:12:21" itemprop="dateModified" datetime="2026-06-13T17:12:21+08:00">2026-06-13</time>
+                <time title="修改时间：2026-06-13 17:24:48" itemprop="dateModified" datetime="2026-06-13T17:24:48+08:00">2026-06-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -279,7 +279,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="梯度法"><a href="#梯度法" class="headerlink" title="梯度法"></a>梯度法</h1><p>机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。<br>通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。<br>需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最小值或者真正应该前进的方向。实际上，在复杂的函数中，梯度指示的方向基本上都不是函数值最小处。<br>虽然梯度的方向并不一定指向最小值，但沿着它的方向能够最大限度地减小函数的值。因此，在寻找函数的最小值（或者尽可能小的值）的位置的任务中，要以梯度的信息为线索，决定前进的方向。梯度法会不断沿梯度方向前进，逐渐减小函数值，从而寻找到尽可能小的值。<br>用数学式表示梯度法：</p>
+        <p>这是深度学习的第二篇～<br><span id="more"></span></p>
+<h1 id="梯度法"><a href="#梯度法" class="headerlink" title="梯度法"></a>梯度法</h1><p>机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。<br>通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。<br>需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最小值或者真正应该前进的方向。实际上，在复杂的函数中，梯度指示的方向基本上都不是函数值最小处。<br>虽然梯度的方向并不一定指向最小值，但沿着它的方向能够最大限度地减小函数的值。因此，在寻找函数的最小值（或者尽可能小的值）的位置的任务中，要以梯度的信息为线索，决定前进的方向。梯度法会不断沿梯度方向前进，逐渐减小函数值，从而寻找到尽可能小的值。<br>用数学式表示梯度法：</p>
 <script type="math/tex; mode=display">\begin{align}
 x_{0}=x_{0}-\eta  \frac{\partial f}{\partial x_{0}} \\
 x_{1}=x_{1}-\eta  \frac{\partial f}{\partial x_{1}}
