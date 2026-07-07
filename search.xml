@@ -56,30 +56,6 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       </tags>
   </entry>
   <entry>
-    <title>应急响应</title>
-    <url>/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</url>
-    <content><![CDATA[<p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
-<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
-<ul>
-<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
-<li>WebShell能被正常解析</li>
-<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
-其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
-<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
-<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
-<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
-</ul>
-<p>持续更新中…</p>
-]]></content>
-      <categories>
-        <category>应急响应</category>
-      </categories>
-      <tags>
-        <tag>学习</tag>
-        <tag>Web</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>年度总结</title>
     <url>/2025/12/31/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<p>一转眼2025都结束了，想了想今年都干了什么，却发现啥都想不起来了。我只能靠着翻着相册去回忆一下今年干过的事情。<br><span id="more"></span></p>
@@ -110,65 +86,72 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       </tags>
   </entry>
   <entry>
-    <title>拉格朗日插值法与傅立叶变换</title>
-    <url>/2025/08/21/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%8F%92%E5%80%BC%E6%B3%95%E4%B8%8E%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2/</url>
-    <content><![CDATA[<p>在中学阶段我们常会听老师说起这样一个定理：<strong>n个点值确定唯一的n-1次多项式函数</strong>。而如何确定该多项式函数？我们会使用解线性方程组的方法。<br><span id="more"></span><br>在中学阶段，我们学到的确定多项式函数的方法往往是这样的：</p>
-<ol>
-<li>已知有$n$个点，确定$n-1$次多项式函数</li>
-<li>将$n$个点分别带入形如$y=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的式子</li>
-<li>联立这些个方程，解出每一项的系数$a_{i}$</li>
-</ol>
-<h1 id="拉格朗日插值法"><a href="#拉格朗日插值法" class="headerlink" title="拉格朗日插值法"></a>拉格朗日插值法</h1><p>联立方程求解虽然很强势，但这还是太吃操作了，那有没有在计算机上更简单粗暴的办法呢？有的，兄弟，有的。拉格朗日插值法就是这样的一个方法，他不需要消元等任何复杂的操作，只需要把数往里一代就行了。</p>
-<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><p>拉格朗日插值法的核心思路也很简单粗暴：利用点值的可加性$(f+g)(x_{i})=f(x_{i})+g(x_{i})$。看上去可能不太明白在说什么，举个例子就清楚了。<br>对于一个多项式函数$f(x)=x^2$和一个多项式函数$g(x)=2x+1$，那么就有$(f+g)(x)=x^{2}+2x+1$。我们考虑他们在取值为$x=1,2,3$的时候，分别有：</p>
-<script type="math/tex; mode=display">\begin{aligned}
-&f(1,2,3)=(1,4,9)\\
-&g(1,2,3)=(3,5,7)\\
-&(f+g)(1,2,3)=(4,9,16)
-\end{aligned}</script><p>显然有$(1,4,9)+(3,5,7)=(4,9,16)$也就是$(f+g)(x_{i})=f(x_{i})+g(x_{i})$</p>
-<h2 id="思路及推导"><a href="#思路及推导" class="headerlink" title="思路及推导"></a>思路及推导</h2><p>既然可以有点值的可加性这样的性质，拉格朗日就有想法了：如果我有个多项式$f_{i}(x)$，对于每个多项式函数$f_{i}(x)$只在$x_{i}$的时候取值$y_{i}$，其他的时候取值为0（也就是$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$）。再把这个多项式函数依据点的可加性加起来，不就能得到个形如$(x_{i},y_{i})$的点所确定的多项式函数了吗？（天才的想法）</p>
-<p>于是说干就干，为了找到$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$这样的函数呢，首先我们得确保$f_{i}(x_{j})=0(i\not=j)$，所以$f_{i}(x)$应该要包含其余所有的$x-x_{j}$作为因式，我们把他们乘起来就有$g_{i}(x)=\prod_{j\not=i}(x-x_{j})$。但这个时候取值为$x_{i}$时，很明显$g_{i}(x_{i})=\prod_{j\not=i}(x_{i}-x_{j})$不一定等于$y_{i}$，所以为了让$f_{i}(x_{i})=y_{i}$我们得乘上一个$\frac{y_{i}}{g_{i}(x_{i})}$。所以：</p>
-<script type="math/tex; mode=display">f_{i}(x)=g_{i}(x)\cdot \frac{y_{i}}{g_{i}(x_{i})}=y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>最后对$f_{i}(x)$求和得到$f(x)$，也就是拉格朗日插值公式：</p>
-<script type="math/tex; mode=display">f(x)=\sum_{i=1}^{n}y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>如何直接获取$f(x)=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的系数呢？我们继续往下推导。首先要明确的是，每个$L_{i}(x)=\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}$本质上就是一个次数为$n$的多项式，其中分母是常数，分子是$(x-x_{1})(x-x_{2})\dots(x-x_{n})$。所以可以展开成：</p>
-<script type="math/tex; mode=display">L_{i}(x)=\frac{1}{\prod_{j\not=i(x_{i}-x_{j})}}\cdot (c_{i_{1}}x^{n-1}+c_{i_{2}}x^{n-2}+\dots+c_{i_{n-1}}x+c_{i_{n}})</script><p>由$f(x)=\sum_{i=1}^{n}y_{i}L_{i}(x)$最终可知其中系数：</p>
-<script type="math/tex; mode=display">a_{k}=\sum_{i=1}^{n}{\frac{y_{i}c_{i_{k}}}{\prod_{j\not=i(x_{i}-x_{j})}}}</script><h1 id="傅立叶变换"><a href="#傅立叶变换" class="headerlink" title="傅立叶变换"></a>傅立叶变换</h1><p>拉格朗日插值法虽然好用，但是时间复杂度为$O(n^{2})$，时间复杂度说不上高，但也不低。那我们想更进一步，就得拿出我们的核心加速工具：快速傅立叶变换。快速傅里叶变换即在离散傅里叶变换基础上通过选取合适的$x_{i}$​，使得可以快速求值。</p>
-<h2 id="离散傅立叶变换-DFT"><a href="#离散傅立叶变换-DFT" class="headerlink" title="离散傅立叶变换(DFT)"></a>离散傅立叶变换(DFT)</h2><p>在介绍快速傅立叶变换前得先介绍离散傅立叶变换：在信号处理与数值计算中，<strong>离散傅立叶变换（DFT, Discrete Fourier Transform）</strong> 是一个重要工具。给定长度为$N$的序列：$x=(x_{0},x_{1},\dots,x_{N-1})$</p>
-<p>其可以通过DFT转换成另一个长度为$N$的序列：$X_{k}=\sum_{n=0}^{N-1}x_{n}\omega_{N}^{kn},k={0,1,\dots,N-1}$（其中$\omega_{N}=e^{-{\frac{2\pi i}{N}}}$即为原始$N$次单位根）</p>
-<blockquote>
-<p> 在复数中，一个复数$\omega$如果满足$\omega^{N}=1$，则称其为$N$次单位根。所有$N$次单位根可以写成$\omega_{k}=e^{\frac{2\pi k}{N}},k=0,1,\dots,N-1$。这些解在复平面上<strong>均匀分布在单位圆上</strong>，相邻两个点之间夹角为$\frac{2\pi}{N}$。</p>
-<p> 若$\omega$为$N$次单位根，并且它的幂次$\omega,\omega^{2},\dots,\omega^{N-1}$恰好能够生成所有不同的$N$次单位根，则称$\omega$为原始$N$次单位根，常用的原始单位根是$\omega_{N}=e^{ \frac{2\pi i}{N} }$</p>
-</blockquote>
-<h2 id="快速傅立叶变换-FFT"><a href="#快速傅立叶变换-FFT" class="headerlink" title="快速傅立叶变换(FFT)"></a>快速傅立叶变换(FFT)</h2><p>说回如何快速计算，考虑任意多项式$f(x)=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}$有：</p>
-<script type="math/tex; mode=display">\begin{equation*}
-\begin{aligned}
-f(x)&=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}\\
-&=a_{0}+a_{2}x^{2}+a_{4}x^{4}+\dots+a_{n-2}x^{n-2}+a_{1}x+a_{3}x^{3}+a_{5}x^{5}+\dots+a_{n-1}x^{n-1}\\
-&=f_{e}(x)+f_{o}(x)
-\end{aligned}
-\end{equation*}</script><p>根据奇偶函数的性质，不难知道$f(-x)=f_{e}(x)-f_{o}(x)$。这意味着我们在计算一组$f_{e}(x),f_{o}(x)$后可以得到有$f(x)$和$f(-x)$两个点的值，但是$f_{e}(x),f_{o}(x)$的最高次项任然是$n-2,n-1$次，计算的时间复杂度并没有降低。这就需要下面的操作。</p>
-<p>对于$f_{e}(x)=a_{0}+a_{2}x^{2}+\dots+a_{n-2}x^{n-2}$来说，我们可以通过换元令$u=x^{2}$进行压缩，变为：$f_{e}^{‘}(u)=a_{0}+a_{2}u+\dots+a_{n-2}u^{\frac{n-2}{2}}$。同样，对于$f_{o}(x)$，我们只需先提出一个$x$，也可化成相同的形式。因此有：</p>
-<script type="math/tex; mode=display">\begin{cases}
-f(x)=f_{e}^{'}(x^{2})+xf_{o}^{'}(x^{2})\\ \\
-f(-x)=f_{e}^{'}(x^{2})-xf_{o}^{'}(x^{2})
-\end{cases}</script><p>要想在计算上节省代价，我们应当选择成对的点$(x,-x)$，这样在计算的时候可以共用同一组$f_{e}^{‘}(x^{2}),f_{o}^{‘}(x^{2})$，就成功将规模压缩成了原本的一半。<br>接下来所要考虑的是如何使它能够递归下去。如果我们一开始点集是$(x_{i},-x_{i})$，平方后就有：${x_{i}}^{2}=(-x_{i})^{2}$，也就是会“合并”为更小的点集，为保证能递归下去：</p>
-<ol>
-<li>有$n$个点，他们得两两配对。</li>
-<li>平方后要得到规模减半的点，依然能配对。</li>
-<li>…</li>
-<li>一直递归$\lceil \omega=\log_{2}n \rceil$层，最后缩减到1个点。</li>
-</ol>
-<p>为了让选择的点集在平方运算下仍然落在同类的点集里，且也能两两配对，一种自然且常用的选择是：把初始点选为某个$k$-次单位根集合，且令$k=2^{\omega}$，具体则是令$\omega_{k}^{j}=e^{-{\frac{2\pi i}{k}}},x\in\{\omega_{k}^{0},\omega_{k}^{1},\dots,\omega_{k}^{k-1}\}$则有$(\omega_{k}^{j})^{2}=\omega_{\frac{k}{2}}^{j},\left( \omega_{\frac{k}{2}}^{j} \right)^{2}=\omega_{\frac{k}{4}}^{j},\dots$直到$\omega_{1}^{j}=1$。<br>这个时候我们再回头考虑成对点$(x_{i},-x_{i})$，由于其为$k$-次单位根，根据性质可以写成$\left( \omega_{k}^{j},\omega_{k}^{j+{\frac{k}{2}}} \right)$，此时有：</p>
-<script type="math/tex; mode=display">\begin{cases}
-f(\omega_{k}^{j})=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)+\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)\\ \\
-f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)-\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)
-\end{cases}</script><p>这正是FFT的<strong>蝴蝶变换</strong>。每一层递归都由若干个蝴蝶组成，层层叠加，最终完成$O(n\log n)$的快速计算。</p>
+    <title>应急响应</title>
+    <url>/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</url>
+    <content><![CDATA[<p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
+<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
+<ul>
+<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
+<li>WebShell能被正常解析</li>
+<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
+其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
+<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
+<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
+<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
+</ul>
+<p>持续更新中…</p>
 ]]></content>
       <categories>
-        <category>algorithm</category>
+        <category>应急响应</category>
       </categories>
       <tags>
         <tag>学习</tag>
-        <tag>Crypto</tag>
-        <tag>拉格朗日</tag>
+        <tag>Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深度学习--part2</title>
+    <url>/2026/06/09/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part2/</url>
+    <content><![CDATA[<p>这是深度学习的第二篇～<br><span id="more"></span></p>
+<h1 id="梯度法"><a href="#梯度法" class="headerlink" title="梯度法"></a>梯度法</h1><p>机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。<br>通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。<br>需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最小值或者真正应该前进的方向。实际上，在复杂的函数中，梯度指示的方向基本上都不是函数值最小处。<br>虽然梯度的方向并不一定指向最小值，但沿着它的方向能够最大限度地减小函数的值。因此，在寻找函数的最小值（或者尽可能小的值）的位置的任务中，要以梯度的信息为线索，决定前进的方向。梯度法会不断沿梯度方向前进，逐渐减小函数值，从而寻找到尽可能小的值。<br>用数学式表示梯度法：</p>
+<script type="math/tex; mode=display">\begin{align}
+x_{0}=x_{0}-\eta  \frac{\partial f}{\partial x_{0}} \\
+x_{1}=x_{1}-\eta  \frac{\partial f}{\partial x_{1}}
+\end{align}</script><p>上式表示了更新一次的值，这个步骤会在学习中反复执行（上式为两个变量的情况，增多变量的数量式子与之类似）。其中的$\eta$表示更新量，在神经网络的学习中，又称为学习率。<br>学习率决定在一次学习中，应该学习多少，以及在多大程度上更新参数。学习率需要事先设定好为某个值，一般而言，这个值过大或过小，都无法抵达一个“好的位置”。(像学习率这样的参数称为超参数。这是一种和神经网络的参数（权重和偏置）性质不同的参数，学习率这样的超参数则是人工设定的。一般来说，超参数需要尝试多个值，以便找到一种可以使学习顺利进行的设定）。<br>用python实现即：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">gradient_descent</span>(<span class="params">f, init_x, lr=<span class="number">0.01</span>, step_num=<span class="number">100</span></span>):</span><br><span class="line">	x = init_x</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> (step_num):</span><br><span class="line">		grad = numerical_gradient(f, x)</span><br><span class="line">		x -= lr * grad</span><br><span class="line">	<span class="keyword">return</span> x</span><br></pre></td></tr></table></figure></p>
+<h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>神经网络整体学习步骤如下：</p>
+<ul>
+<li>前提：神经网络存在合适的权重和偏置，调整权重和偏置以便拟合训练数据的过程称为“学习”。神经网络的学习分成下面4个步骤。</li>
+<li>步骤1（mini-batch）：从训练数据中随机选出一部分数据，这部分数据称为mini-batch。我们的目标是减少mini-batch的损失函数的值。</li>
+<li>步骤2（计算梯度）：为了减小mini-batch的损失函数的值，需要求出各个权重参数的梯度。梯度表示损失函数的值减小最多的方向。</li>
+<li>步骤3（更新参数）：将权重参数沿梯度方向进行微小的更新。</li>
+<li>步骤4（重复）：重复步骤1，2，3<br>神经网络的学习按照上面4个步骤进行。这个方法通过梯度下降法更新参数，不过因为这里使用的数据是随机选择的mini batch数据，所以又称为随机梯度下降法（SGD） 。<br>假设总数据量为60000，mini-batch的大小为100，则每一次训练中会从60000个训练数据中随机取出100个数据（图像数据和正确解标签数据），然后，对这个包含100笔数据的mini-batch求梯度，使用随机梯度下降法更新参数。在更新过程中，损失函数图像将会出现逐渐下降的趋势：<br><img src="/images/loss.png" alt><br>这意味着学习在正常的进行，表示神经网络的权重参数在逐渐拟合数据。不过这个损失函数的值，严格地讲是“对训练数据的某个mini-batch的损失函数”的值。训练数据的损失函数值减小，虽说是神经网络的学习正常进行的一个信号，但光看这个结果还不能说明该神经网络在其他数据集上也一定能有同等程度的表现。<br>神经网络的学习中，必须确认是否能够正确识别训练数据以外的其他数据，即确认是否会发生过拟合。所以需要定期地对训练数据和测试数据记录识别精度，一般是每经过一个epoch（一个 epoch 表示学习中所有训练数据均被使用过一次时的更新次数。比如，对于10000笔训练数据，用大小为100笔数据的mini-batch进行学习时，重复随机梯度下降法100次，所有的训练数据就都被“看过”了 。此时，100次就是一个epoch）记录一次。图像大致如下：<br><img src="/images/acc.png" alt><br>实线表示训练数据的识别精度，虚线表示测试数据的识别精度。图中，随epoch的前进，二者识别精度都提高了，且识别精度上基本没差异，则可以说明没有出现过拟合现象。<h1 id="误差反向传播法"><a href="#误差反向传播法" class="headerlink" title="误差反向传播法"></a>误差反向传播法</h1>先前我们是通过数值微分的方法来计算神经网络的权重参数的梯度，实现虽然简单，但是计算上会费时。我们需要更高效的计算权重参数的梯度，所以需要使用误差反向传播法。<h2 id="计算图"><a href="#计算图" class="headerlink" title="计算图"></a>计算图</h2>计算图通过节点和箭头表示计算过程，将计算的中间结果写在箭头的上方，表示各个节点的计算结果从左向右传递。以下述问题为示例：<br>太郎在超市买了2个苹果、3个橘子。其中，苹果每个100日元，橘子每个150日元。消费税是10%，请计算支付金额。<br>用计算图可以表示为：<br><img src="/images/jisuantu.png" alt><br>如图中从左向右进行计算，即为一种正方向上的传播，简称为正向传播。正向传播是从计算图出发点到结束点的传播。同样的，考虑反向（从图上看的话，就是从右向左）的传播。实际上，这种传播称为反向传播。<br>计算图的特征是可以通过传递“局部计算”获得最终结果（局部计算是指，无论全局发生了什么，都能只根据与自己相关的信息输出接下来的结果）。<br>比如超市买了2个苹果和其他很多东西。此时，可以画出如图所示的计算图：<br><img src="/images/jubujisuan.png" alt><br>这里的重点是，各个节点处的计算都是局部计算。这意味着，例如苹果和其他很多东西的求和运算并不关心4000这个数字是如何计算而来的，只要把两个数字相加就可以了。也就是说，无论全局的计算多么复杂，各个步骤要做的只是对对象节点的局部计算，通过传递它的计算结果，获得全局的复杂计算的结果。<br>此外，使用计算图可以通过反向传播高效计算导数。首先得需要理解计算图反向传播的计算，举个使用计算图的反向传播的例子：<br><img src="/images/fanxiang.png" alt><br>反向传播的计算顺序是，将节点输入信号乘以节点的局部导数（偏导数），然后将结果传递给下一个节点。比如，反向传播时，平方运算的节点输入为$\frac{\partial z}{\partial z}$，将其乘上局部导数$\frac{\partial z}{\partial t}$，然后传递给下一个节点。最终传递到最左侧上方结果即为$\frac{\partial z}{\partial z}\frac{\partial z}{\partial t}\frac{\partial t}{\partial x}=\frac{\partial z}{\partial x}$。<br>基于此运算规则，不难得知，加法的反向传播即是将输入原封不动传给下一节点。<br>对于乘法，考虑$z=xy$，导数式则为：<script type="math/tex; mode=display">\begin{align}
+\frac{\partial z}{\partial x}=y \\
+\frac{\partial z}{\partial y}=x
+\end{align}</script>计算图则如下图：<br><img src="/images/timescal.png" alt><br>也不难发现，只需将正向传播的输入信号翻转后相乘即可。<br>再来考虑购买苹果的例子：<br>太郎在超市买了2个100日元一个的苹果，消费税是 10%，请计算支付金额，及苹果价格、个数、消费税的上涨会在多大程度上影响最终的支付金额。<br>这里我们要求的苹果价格的上涨会在多大程度上影响最终的支付金额，即求“支付金额关于苹果的价格的导数“。设苹果的价格为$x$，支付金额为$L$，则相当于求$\frac{\partial L}{\partial x}$。这个导数的值表示当苹果的价格稍微上涨时，支付金额会增加多少。求解则如图：<br><img src="/images/fanxiangexample.png" alt><br>图中结果可知，苹果的价格的导数是2.2，苹果的个数的导数是110，消费税的导数是200。这可以解释为，如果消费税和苹果的价格增加相同的值，则消费税将对最终价格产生200倍大小的影响，苹果的价格将产生2.2倍大小的影响。这样我们便将导数和计算图联系了起来。<br>类似的，我们也可以将反向传播法用于神经网络。为方便理解运算，会分开各层分别介绍。<h2 id="激活函数层"><a href="#激活函数层" class="headerlink" title="激活函数层"></a>激活函数层</h2>激活函数层，实质是叠加了函数$h()$，将输入信号的总和转换为输出信号。所以需对各种不同函数进行讨论。<h3 id="ReLU函数"><a href="#ReLU函数" class="headerlink" title="ReLU函数"></a>ReLU函数</h3>激活函数ReLU（Rectified Linear Unit ）由下式表示：<script type="math/tex; mode=display">y=\begin{cases}
+x&(x>0) \\
+0&(x\leq 0)
+\end{cases}</script>可以得知$y$对$x$的导数：<script type="math/tex; mode=display">\frac{\partial y}{\partial x}=\begin{cases}
+1&(x>0) \\
+0&(x\leq 0)
+\end{cases}</script>计算图表示为：<br><img src="/images/Relu.png" alt><br>用python实现即为：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Relu</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">		<span class="variable language_">self</span>.mask = <span class="literal">None</span></span><br><span class="line">		</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">		<span class="variable language_">self</span>.mask = (x &lt;= <span class="number">0</span>)</span><br><span class="line">		out = x.copy()</span><br><span class="line">		out[<span class="variable language_">self</span>.mask] = <span class="number">0</span></span><br><span class="line">		<span class="keyword">return</span> out</span><br><span class="line">		</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, dout</span>):</span><br><span class="line">		dout[<span class="variable language_">self</span>.mask] = <span class="number">0</span></span><br><span class="line">		dx = dout</span><br><span class="line">		<span class="keyword">return</span> dx</span><br><span class="line">	</span><br></pre></td></tr></table></figure>
+<h3 id="sigmoid函数"><a href="#sigmoid函数" class="headerlink" title="sigmoid函数"></a>sigmoid函数</h3>sigmoid 函数由下式表示：<script type="math/tex; mode=display">y=\frac{1}{1+\exp(-x)}</script>分步对sigmoid函数计算导数，可表示为如下计算图：<br><img src="/images/sigmoid.png" alt><br>即最终的导数为$\frac{\partial L}{\partial y}y^{2}\exp(-x)$，进一步整理可以得到：<script type="math/tex; mode=display">\begin{align}
+\frac{\partial L}{\partial y}y^{2}\exp(-x)&=\frac{\partial L}{\partial y} \frac{1}{(1+\exp(-x))^{2}}\exp(-x) \\
+&=\frac{\partial L}{\partial y} \frac{1}{1+\exp(-x)} \frac{\exp(-x)}{1+\exp(-x)} \\
+&=\frac{\partial L}{\partial y}y(1-y)
+\end{align}</script>最终计算图表示如下：<br><img src="/images/allsigmoid.png" alt><br>用python实现即为：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Sigmoid</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">		<span class="variable language_">self</span>.out = <span class="literal">None</span></span><br><span class="line">		</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">		out = <span class="number">1</span> / (<span class="number">1</span> + np.exp(-x))</span><br><span class="line">		<span class="variable language_">self</span>.out = out</span><br><span class="line">		<span class="keyword">return</span> out</span><br><span class="line">		</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, dout</span>):</span><br><span class="line">		dx = dout * (<span class="number">1.0</span> - <span class="variable language_">self</span>.out) * <span class="variable language_">self</span>.out</span><br><span class="line">		<span class="keyword">return</span> dx</span><br></pre></td></tr></table></figure>
+<h2 id="Affine层"><a href="#Affine层" class="headerlink" title="Affine层"></a>Affine层</h2>神经网络的正向传播中，为了计算加权信号的总和，使用了矩阵的乘积运算。用计算图表示：<br><img src="/images/affine.png" alt><br>之前我们见到的计算图中各个节点间流动的是标量，而该计算图中各个节点间传播的是矩阵。以矩阵为对象的反向传播，按矩阵的各个元素进行计算时，步骤和以标量为对象的计算图相同。<br>以下图标注为例：<br><img src="/images/affine_2.png" alt><br>矩阵的乘积（“dot”节点）的反向传播可以通过组建使矩阵对应维度的元素个数一致的乘积运算而推导出来。可以得到以下结论：<script type="math/tex; mode=display">\begin{align}
+\frac{\partial L}{\partial \mathbf{X}}&=\frac{\partial L}{\partial \mathbf{Y}}\cdot \mathbf{W}^{T} \\
+\frac{\partial L}{\partial \mathbf{W}}&=\mathbf{X}^{T}\cdot\frac{\partial L}{\partial \mathbf{Y}} \\
+\end{align}</script>推导过程可以参考：<a href="https://zhuanlan.zhihu.com/p/628063109">https://zhuanlan.zhihu.com/p/628063109</a><h2 id="批版本Affine层"><a href="#批版本Affine层" class="headerlink" title="批版本Affine层"></a>批版本Affine层</h2>前面介绍的Affine层的输入$\mathbf{X}$是以单个数据为对象的。现在我们考虑N个数据一起进行正向传播的情况(也就是$\mathbf{X}$从向量变为了矩阵形式)，也就是批版本的Affine层。先给出批版本的Affine层的计算图，如图所示：<br><img src="/images/batch_affine.png" alt><br>可以发现和前面是一样的，唯一需要注意的是偏置$\mathbf{B}$会加到$\mathbf{X}\cdot \mathbf{W}$各个数据上（也就是把向量$\mathbf{B}$变为N行的矩阵，再进行相加）。<br>用python实现即为：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Affine</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, W, b</span>):</span><br><span class="line">		<span class="variable language_">self</span>.W = W</span><br><span class="line">		<span class="variable language_">self</span>.b = b</span><br><span class="line">		<span class="variable language_">self</span>.x = <span class="literal">None</span></span><br><span class="line">		<span class="variable language_">self</span>.dW = <span class="literal">None</span></span><br><span class="line">		<span class="variable language_">self</span>.db = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">		<span class="variable language_">self</span>.x = x</span><br><span class="line">		out = np.dot(x, <span class="variable language_">self</span>.W) + <span class="variable language_">self</span>.b</span><br><span class="line">		<span class="keyword">return</span> out</span><br><span class="line"></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, dout</span>):</span><br><span class="line">		dx = np.dot(dout, <span class="variable language_">self</span>.W.T)</span><br><span class="line">		<span class="variable language_">self</span>.dW = np.dot(<span class="variable language_">self</span>.x.T, dout)</span><br><span class="line">		<span class="variable language_">self</span>.db = np.<span class="built_in">sum</span>(dout, axis=<span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> dx</span><br></pre></td></tr></table></figure>
+<h2 id="softmax-with-loss层"><a href="#softmax-with-loss层" class="headerlink" title="softmax-with-loss层"></a>softmax-with-loss层</h2>前面我们提到过，softmax函数会将输入值正规化之后再输出。比如手写数字识别时，Softmax层的输出如图所示：<br><img src="/images/softmax-with-loss.png" alt><br>在图中，Softmax 层将输入值正规化（将输出值的和调整为1）之后再输出。另外，因为手写数字识别要进行10类分类，所以向Softmax层的输入也有10个。<br>%% 神经网络中进行的处理有推理和学习两个阶段。神经网络的推理通常不使用Softmax层。比如，用图中的网络进行推理时，会将最后一个Affine层的输出作为识别结果。神经网络中未被正规化的输出结果（图中Softmax层前面的Affine层的输出）有时被称为“得分”。也就是说，当神经网络的推理只需要给出一个答案的情况下，因为此时只对得分最大值感兴趣，所以不需要Softmax层。不过，神经网络的学习阶段则需要Softmax层。 %%<br>下面来实现Softmax层。考虑到这里也包含作为损失函数的交叉熵误差（cross entropy error），所以称为“Softmax-with-Loss层”。Softmax-with-Loss层（Softmax函数和交叉熵误差）的计算图如图所示。<br><img src="/images/softmax-cross-entropy.png" alt><br>可以看到，Softmax-with-Loss层有些复杂。下图中，softmax 函数记为Softmax层，交叉熵误差记为Cross Entropy Error 层。这里假设要进行3类分类，从前面的层接收3个输入（得分）。如图所示，Softmax层将输入$(a_{1}, a_{2}, a_{3})$正规化，输出$(y_{1}, y_{2}, y_{3})$。Cross Entropy Error层接收Softmax的输出$(y_{1}, y_{2}, y_{3})$和教师标签$(t_{1}, t_{2}, t_{3)}$，从这些数据中输出损失L。<br><img src="/images/simplify-softmax-loss.png" alt><br>要注意的是反向传播的结果。Softmax层的反向传播得到了$(y_{1}−t_{1}, y_{2}−t_{2}, y_{3}− t_{3})$这样“漂亮”的结果。由于$(y_{1}, y_{2}, y_{3})$是 Softmax层的输出， $(t_{1}, t_{2}, t_{3})$ 是监督数据，所以 $(y_{1}− t_{1}, y_{2}− t_{2}, y_{3}− t_{3})$是Softmax层的输出和教师标签的差分。神经网络的反向传播会把这个差分表示的误差传递给前面的层，这是神经网络学习中的重要性质。<br>神经网络学习的目的就是通过调整权重参数，使神经网络的输出（Softmax的输出）接近教师标签。因此，必须将神经网络的输出与教师标签的误差高效地传递给前面的层。刚刚的$(y_{1}− t_{1}, y_{2}− t_{2}, y_{3}− t_{3})$正是 Softmax 层的输出与教师标签的差，直截了当地表示了当前神经网络的输出与教师标签的误差。<br>python实现：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SoftmaxWithLoss</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">		<span class="variable language_">self</span>.loss = <span class="literal">None</span> <span class="comment"># 损失</span></span><br><span class="line">		<span class="variable language_">self</span>.y = <span class="literal">None</span> <span class="comment"># softmax的输出</span></span><br><span class="line">		<span class="variable language_">self</span>.t = <span class="literal">None</span> <span class="comment"># 监督数据（ one-hot vector）</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x, t</span>):</span><br><span class="line">		<span class="variable language_">self</span>.t = t</span><br><span class="line">		<span class="variable language_">self</span>.y = softmax(x)</span><br><span class="line">		<span class="variable language_">self</span>.loss = cross_entropy_error(<span class="variable language_">self</span>.y, <span class="variable language_">self</span>.t)</span><br><span class="line">		<span class="keyword">return</span> <span class="variable language_">self</span>.loss</span><br><span class="line"></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, dout=<span class="number">1</span></span>):</span><br><span class="line">		batch_size = <span class="variable language_">self</span>.t.shape[<span class="number">0</span>]</span><br><span class="line">		dx = (<span class="variable language_">self</span>.y - <span class="variable language_">self</span>.t) / batch_size</span><br><span class="line">		<span class="keyword">return</span> dx</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>深度学习</tag>
       </tags>
   </entry>
   <entry>
@@ -279,44 +262,65 @@ w_{12}^{(1)}&w_{22}^{(1)}&w_{32}^{(1)}
       </tags>
   </entry>
   <entry>
-    <title>深度学习--part2</title>
-    <url>/2026/06/09/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part2/</url>
-    <content><![CDATA[<p>这是深度学习的第二篇～<br><span id="more"></span></p>
-<h1 id="梯度法"><a href="#梯度法" class="headerlink" title="梯度法"></a>梯度法</h1><p>机器学习的主要任务是在学习时寻找最优参数。同样地，神经网络也必须在学习时找到最优参数（权重和偏置）。这里所说的最优参数是指损失函数取最小值时的参数。但是，一般而言，损失函数很复杂，参数空间庞大，我们不知道它在何处能取得最小值。<br>通过巧妙地使用梯度来寻找函数最小值（或者尽可能小的值）的方法就是梯度法。<br>需要注意的是，梯度表示的是各点处的函数值减小最多的方向。因此，无法保证梯度所指的方向就是函数的最小值或者真正应该前进的方向。实际上，在复杂的函数中，梯度指示的方向基本上都不是函数值最小处。<br>虽然梯度的方向并不一定指向最小值，但沿着它的方向能够最大限度地减小函数的值。因此，在寻找函数的最小值（或者尽可能小的值）的位置的任务中，要以梯度的信息为线索，决定前进的方向。梯度法会不断沿梯度方向前进，逐渐减小函数值，从而寻找到尽可能小的值。<br>用数学式表示梯度法：</p>
-<script type="math/tex; mode=display">\begin{align}
-x_{0}=x_{0}-\eta  \frac{\partial f}{\partial x_{0}} \\
-x_{1}=x_{1}-\eta  \frac{\partial f}{\partial x_{1}}
-\end{align}</script><p>上式表示了更新一次的值，这个步骤会在学习中反复执行（上式为两个变量的情况，增多变量的数量式子与之类似）。其中的$\eta$表示更新量，在神经网络的学习中，又称为学习率。<br>学习率决定在一次学习中，应该学习多少，以及在多大程度上更新参数。学习率需要事先设定好为某个值，一般而言，这个值过大或过小，都无法抵达一个“好的位置”。(像学习率这样的参数称为超参数。这是一种和神经网络的参数（权重和偏置）性质不同的参数，学习率这样的超参数则是人工设定的。一般来说，超参数需要尝试多个值，以便找到一种可以使学习顺利进行的设定）。<br>用python实现即：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">gradient_descent</span>(<span class="params">f, init_x, lr=<span class="number">0.01</span>, step_num=<span class="number">100</span></span>):</span><br><span class="line">	x = init_x</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> (step_num):</span><br><span class="line">		grad = numerical_gradient(f, x)</span><br><span class="line">		x -= lr * grad</span><br><span class="line">	<span class="keyword">return</span> x</span><br></pre></td></tr></table></figure></p>
-<h1 id="学习算法"><a href="#学习算法" class="headerlink" title="学习算法"></a>学习算法</h1><p>神经网络整体学习步骤如下：</p>
-<ul>
-<li>前提：神经网络存在合适的权重和偏置，调整权重和偏置以便拟合训练数据的过程称为“学习”。神经网络的学习分成下面4个步骤。</li>
-<li>步骤1（mini-batch）：从训练数据中随机选出一部分数据，这部分数据称为mini-batch。我们的目标是减少mini-batch的损失函数的值。</li>
-<li>步骤2（计算梯度）：为了减小mini-batch的损失函数的值，需要求出各个权重参数的梯度。梯度表示损失函数的值减小最多的方向。</li>
-<li>步骤3（更新参数）：将权重参数沿梯度方向进行微小的更新。</li>
-<li>步骤4（重复）：重复步骤1，2，3<br>神经网络的学习按照上面4个步骤进行。这个方法通过梯度下降法更新参数，不过因为这里使用的数据是随机选择的mini batch数据，所以又称为随机梯度下降法（SGD） 。<br>假设总数据量为60000，mini-batch的大小为100，则每一次训练中会从60000个训练数据中随机取出100个数据（图像数据和正确解标签数据），然后，对这个包含100笔数据的mini-batch求梯度，使用随机梯度下降法更新参数。在更新过程中，损失函数图像将会出现逐渐下降的趋势：<br><img src="/images/loss.png" alt><br>这意味着学习在正常的进行，表示神经网络的权重参数在逐渐拟合数据。不过这个损失函数的值，严格地讲是“对训练数据的某个mini-batch的损失函数”的值。训练数据的损失函数值减小，虽说是神经网络的学习正常进行的一个信号，但光看这个结果还不能说明该神经网络在其他数据集上也一定能有同等程度的表现。<br>神经网络的学习中，必须确认是否能够正确识别训练数据以外的其他数据，即确认是否会发生过拟合。所以需要定期地对训练数据和测试数据记录识别精度，一般是每经过一个epoch（一个 epoch 表示学习中所有训练数据均被使用过一次时的更新次数。比如，对于10000笔训练数据，用大小为100笔数据的mini-batch进行学习时，重复随机梯度下降法100次，所有的训练数据就都被“看过”了 。此时，100次就是一个epoch）记录一次。图像大致如下：<br><img src="/images/acc.png" alt><br>实线表示训练数据的识别精度，虚线表示测试数据的识别精度。图中，随epoch的前进，二者识别精度都提高了，且识别精度上基本没差异，则可以说明没有出现过拟合现象。<h1 id="误差反向传播法"><a href="#误差反向传播法" class="headerlink" title="误差反向传播法"></a>误差反向传播法</h1>先前我们是通过数值微分的方法来计算神经网络的权重参数的梯度，实现虽然简单，但是计算上会费时。我们需要更高效的计算权重参数的梯度，所以需要使用误差反向传播法。<h2 id="计算图"><a href="#计算图" class="headerlink" title="计算图"></a>计算图</h2>计算图通过节点和箭头表示计算过程，将计算的中间结果写在箭头的上方，表示各个节点的计算结果从左向右传递。以下述问题为示例：<br>太郎在超市买了2个苹果、3个橘子。其中，苹果每个100日元，橘子每个150日元。消费税是10%，请计算支付金额。<br>用计算图可以表示为：<br><img src="/images/jisuantu.png" alt><br>如图中从左向右进行计算，即为一种正方向上的传播，简称为正向传播。正向传播是从计算图出发点到结束点的传播。同样的，考虑反向（从图上看的话，就是从右向左）的传播。实际上，这种传播称为反向传播。<br>计算图的特征是可以通过传递“局部计算”获得最终结果（局部计算是指，无论全局发生了什么，都能只根据与自己相关的信息输出接下来的结果）。<br>比如超市买了2个苹果和其他很多东西。此时，可以画出如图所示的计算图：<br><img src="/images/jubujisuan.png" alt><br>这里的重点是，各个节点处的计算都是局部计算。这意味着，例如苹果和其他很多东西的求和运算并不关心4000这个数字是如何计算而来的，只要把两个数字相加就可以了。也就是说，无论全局的计算多么复杂，各个步骤要做的只是对对象节点的局部计算，通过传递它的计算结果，获得全局的复杂计算的结果。<br>此外，使用计算图可以通过反向传播高效计算导数。首先得需要理解计算图反向传播的计算，举个使用计算图的反向传播的例子：<br><img src="/images/fanxiang.png" alt><br>反向传播的计算顺序是，将节点输入信号乘以节点的局部导数（偏导数），然后将结果传递给下一个节点。比如，反向传播时，平方运算的节点输入为$\frac{\partial z}{\partial z}$，将其乘上局部导数$\frac{\partial z}{\partial t}$，然后传递给下一个节点。最终传递到最左侧上方结果即为$\frac{\partial z}{\partial z}\frac{\partial z}{\partial t}\frac{\partial t}{\partial x}=\frac{\partial z}{\partial x}$。<br>基于此运算规则，不难得知，加法的反向传播即是将输入原封不动传给下一节点。<br>对于乘法，考虑$z=xy$，导数式则为：<script type="math/tex; mode=display">\begin{align}
-\frac{\partial z}{\partial x}=y \\
-\frac{\partial z}{\partial y}=x
-\end{align}</script>计算图则如下图：<br><img src="/images/timescal.png" alt><br>也不难发现，只需将正向传播的输入信号翻转后相乘即可。<br>再来考虑购买苹果的例子：<br>太郎在超市买了2个100日元一个的苹果，消费税是 10%，请计算支付金额，及苹果价格、个数、消费税的上涨会在多大程度上影响最终的支付金额。<br>这里我们要求的苹果价格的上涨会在多大程度上影响最终的支付金额，即求“支付金额关于苹果的价格的导数“。设苹果的价格为$x$，支付金额为$L$，则相当于求$\frac{\partial L}{\partial x}$。这个导数的值表示当苹果的价格稍微上涨时，支付金额会增加多少。求解则如图：<br><img src="/images/fanxiangexample.png" alt><br>图中结果可知，苹果的价格的导数是2.2，苹果的个数的导数是110，消费税的导数是200。这可以解释为，如果消费税和苹果的价格增加相同的值，则消费税将对最终价格产生200倍大小的影响，苹果的价格将产生2.2倍大小的影响。这样我们便将导数和计算图联系了起来。<br>类似的，我们也可以将反向传播法用于神经网络。为方便理解运算，会分开各层分别介绍。<h2 id="激活函数层"><a href="#激活函数层" class="headerlink" title="激活函数层"></a>激活函数层</h2>激活函数层，实质是叠加了函数$h()$，将输入信号的总和转换为输出信号。所以需对各种不同函数进行讨论。<h3 id="ReLU函数"><a href="#ReLU函数" class="headerlink" title="ReLU函数"></a>ReLU函数</h3>激活函数ReLU（Rectified Linear Unit ）由下式表示：<script type="math/tex; mode=display">y=\begin{cases}
-x&(x>0) \\
-0&(x\leq 0)
-\end{cases}</script>可以得知$y$对$x$的导数：<script type="math/tex; mode=display">\frac{\partial y}{\partial x}=\begin{cases}
-1&(x>0) \\
-0&(x\leq 0)
-\end{cases}</script>计算图表示为：<br><img src="/images/Relu.png" alt><br>用python实现即为：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Relu</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">		<span class="variable language_">self</span>.mask = <span class="literal">None</span></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">		<span class="variable language_">self</span>.mask = (x &lt;= <span class="number">0</span>)</span><br><span class="line">		out = x.copy()</span><br><span class="line">		out[<span class="variable language_">self</span>.mask] = <span class="number">0</span></span><br><span class="line">		<span class="keyword">return</span> out</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, dout</span>):</span><br><span class="line">		dout[<span class="variable language_">self</span>.mask] = <span class="number">0</span></span><br><span class="line">		dx = dout</span><br><span class="line">		<span class="keyword">return</span> dx</span><br><span class="line">	</span><br></pre></td></tr></table></figure>
-<h3 id="sigmoid函数"><a href="#sigmoid函数" class="headerlink" title="sigmoid函数"></a>sigmoid函数</h3>sigmoid 函数由下式表示：<script type="math/tex; mode=display">y=\frac{1}{1+\exp(-x)}</script>分步对sigmoid函数计算导数，可表示为如下计算图：<br><img src="/images/sigmoid.png" alt><br>即最终的导数为$\frac{\partial L}{\partial y}y^{2}\exp(-x)$，进一步整理可以得到：<script type="math/tex; mode=display">\begin{align}
-\frac{\partial L}{\partial y}y^{2}\exp(-x)&=\frac{\partial L}{\partial y} \frac{1}{(1+\exp(-x))^{2}}\exp(-x) \\
-&=\frac{\partial L}{\partial y} \frac{1}{1+\exp(-x)} \frac{\exp(-x)}{1+\exp(-x)} \\
-&=\frac{\partial L}{\partial y}y(1-y)
-\end{align}</script>最终计算图表示如下：<br><img src="/images/allsigmoid.png" alt><br>用python实现即为：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Sigmoid</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">		<span class="variable language_">self</span>.out = <span class="literal">None</span></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">		out = <span class="number">1</span> / (<span class="number">1</span> + np.exp(-x))</span><br><span class="line">		<span class="variable language_">self</span>.out = out</span><br><span class="line">		<span class="keyword">return</span> out</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">backward</span>(<span class="params">self, dout</span>):</span><br><span class="line">		dx = dout * (<span class="number">1.0</span> - <span class="variable language_">self</span>.out) * <span class="variable language_">self</span>.out</span><br><span class="line">		<span class="keyword">return</span> dx</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
+    <title>拉格朗日插值法与傅立叶变换</title>
+    <url>/2025/08/21/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%8F%92%E5%80%BC%E6%B3%95%E4%B8%8E%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2/</url>
+    <content><![CDATA[<p>在中学阶段我们常会听老师说起这样一个定理：<strong>n个点值确定唯一的n-1次多项式函数</strong>。而如何确定该多项式函数？我们会使用解线性方程组的方法。<br><span id="more"></span><br>在中学阶段，我们学到的确定多项式函数的方法往往是这样的：</p>
+<ol>
+<li>已知有$n$个点，确定$n-1$次多项式函数</li>
+<li>将$n$个点分别带入形如$y=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的式子</li>
+<li>联立这些个方程，解出每一项的系数$a_{i}$</li>
+</ol>
+<h1 id="拉格朗日插值法"><a href="#拉格朗日插值法" class="headerlink" title="拉格朗日插值法"></a>拉格朗日插值法</h1><p>联立方程求解虽然很强势，但这还是太吃操作了，那有没有在计算机上更简单粗暴的办法呢？有的，兄弟，有的。拉格朗日插值法就是这样的一个方法，他不需要消元等任何复杂的操作，只需要把数往里一代就行了。</p>
+<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><p>拉格朗日插值法的核心思路也很简单粗暴：利用点值的可加性$(f+g)(x_{i})=f(x_{i})+g(x_{i})$。看上去可能不太明白在说什么，举个例子就清楚了。<br>对于一个多项式函数$f(x)=x^2$和一个多项式函数$g(x)=2x+1$，那么就有$(f+g)(x)=x^{2}+2x+1$。我们考虑他们在取值为$x=1,2,3$的时候，分别有：</p>
+<script type="math/tex; mode=display">\begin{aligned}
+&f(1,2,3)=(1,4,9)\\
+&g(1,2,3)=(3,5,7)\\
+&(f+g)(1,2,3)=(4,9,16)
+\end{aligned}</script><p>显然有$(1,4,9)+(3,5,7)=(4,9,16)$也就是$(f+g)(x_{i})=f(x_{i})+g(x_{i})$</p>
+<h2 id="思路及推导"><a href="#思路及推导" class="headerlink" title="思路及推导"></a>思路及推导</h2><p>既然可以有点值的可加性这样的性质，拉格朗日就有想法了：如果我有个多项式$f_{i}(x)$，对于每个多项式函数$f_{i}(x)$只在$x_{i}$的时候取值$y_{i}$，其他的时候取值为0（也就是$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$）。再把这个多项式函数依据点的可加性加起来，不就能得到个形如$(x_{i},y_{i})$的点所确定的多项式函数了吗？（天才的想法）</p>
+<p>于是说干就干，为了找到$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$这样的函数呢，首先我们得确保$f_{i}(x_{j})=0(i\not=j)$，所以$f_{i}(x)$应该要包含其余所有的$x-x_{j}$作为因式，我们把他们乘起来就有$g_{i}(x)=\prod_{j\not=i}(x-x_{j})$。但这个时候取值为$x_{i}$时，很明显$g_{i}(x_{i})=\prod_{j\not=i}(x_{i}-x_{j})$不一定等于$y_{i}$，所以为了让$f_{i}(x_{i})=y_{i}$我们得乘上一个$\frac{y_{i}}{g_{i}(x_{i})}$。所以：</p>
+<script type="math/tex; mode=display">f_{i}(x)=g_{i}(x)\cdot \frac{y_{i}}{g_{i}(x_{i})}=y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>最后对$f_{i}(x)$求和得到$f(x)$，也就是拉格朗日插值公式：</p>
+<script type="math/tex; mode=display">f(x)=\sum_{i=1}^{n}y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>如何直接获取$f(x)=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的系数呢？我们继续往下推导。首先要明确的是，每个$L_{i}(x)=\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}$本质上就是一个次数为$n$的多项式，其中分母是常数，分子是$(x-x_{1})(x-x_{2})\dots(x-x_{n})$。所以可以展开成：</p>
+<script type="math/tex; mode=display">L_{i}(x)=\frac{1}{\prod_{j\not=i(x_{i}-x_{j})}}\cdot (c_{i_{1}}x^{n-1}+c_{i_{2}}x^{n-2}+\dots+c_{i_{n-1}}x+c_{i_{n}})</script><p>由$f(x)=\sum_{i=1}^{n}y_{i}L_{i}(x)$最终可知其中系数：</p>
+<script type="math/tex; mode=display">a_{k}=\sum_{i=1}^{n}{\frac{y_{i}c_{i_{k}}}{\prod_{j\not=i(x_{i}-x_{j})}}}</script><h1 id="傅立叶变换"><a href="#傅立叶变换" class="headerlink" title="傅立叶变换"></a>傅立叶变换</h1><p>拉格朗日插值法虽然好用，但是时间复杂度为$O(n^{2})$，时间复杂度说不上高，但也不低。那我们想更进一步，就得拿出我们的核心加速工具：快速傅立叶变换。快速傅里叶变换即在离散傅里叶变换基础上通过选取合适的$x_{i}$​，使得可以快速求值。</p>
+<h2 id="离散傅立叶变换-DFT"><a href="#离散傅立叶变换-DFT" class="headerlink" title="离散傅立叶变换(DFT)"></a>离散傅立叶变换(DFT)</h2><p>在介绍快速傅立叶变换前得先介绍离散傅立叶变换：在信号处理与数值计算中，<strong>离散傅立叶变换（DFT, Discrete Fourier Transform）</strong> 是一个重要工具。给定长度为$N$的序列：$x=(x_{0},x_{1},\dots,x_{N-1})$</p>
+<p>其可以通过DFT转换成另一个长度为$N$的序列：$X_{k}=\sum_{n=0}^{N-1}x_{n}\omega_{N}^{kn},k={0,1,\dots,N-1}$（其中$\omega_{N}=e^{-{\frac{2\pi i}{N}}}$即为原始$N$次单位根）</p>
+<blockquote>
+<p> 在复数中，一个复数$\omega$如果满足$\omega^{N}=1$，则称其为$N$次单位根。所有$N$次单位根可以写成$\omega_{k}=e^{\frac{2\pi k}{N}},k=0,1,\dots,N-1$。这些解在复平面上<strong>均匀分布在单位圆上</strong>，相邻两个点之间夹角为$\frac{2\pi}{N}$。</p>
+<p> 若$\omega$为$N$次单位根，并且它的幂次$\omega,\omega^{2},\dots,\omega^{N-1}$恰好能够生成所有不同的$N$次单位根，则称$\omega$为原始$N$次单位根，常用的原始单位根是$\omega_{N}=e^{ \frac{2\pi i}{N} }$</p>
+</blockquote>
+<h2 id="快速傅立叶变换-FFT"><a href="#快速傅立叶变换-FFT" class="headerlink" title="快速傅立叶变换(FFT)"></a>快速傅立叶变换(FFT)</h2><p>说回如何快速计算，考虑任意多项式$f(x)=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}$有：</p>
+<script type="math/tex; mode=display">\begin{equation*}
+\begin{aligned}
+f(x)&=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}\\
+&=a_{0}+a_{2}x^{2}+a_{4}x^{4}+\dots+a_{n-2}x^{n-2}+a_{1}x+a_{3}x^{3}+a_{5}x^{5}+\dots+a_{n-1}x^{n-1}\\
+&=f_{e}(x)+f_{o}(x)
+\end{aligned}
+\end{equation*}</script><p>根据奇偶函数的性质，不难知道$f(-x)=f_{e}(x)-f_{o}(x)$。这意味着我们在计算一组$f_{e}(x),f_{o}(x)$后可以得到有$f(x)$和$f(-x)$两个点的值，但是$f_{e}(x),f_{o}(x)$的最高次项任然是$n-2,n-1$次，计算的时间复杂度并没有降低。这就需要下面的操作。</p>
+<p>对于$f_{e}(x)=a_{0}+a_{2}x^{2}+\dots+a_{n-2}x^{n-2}$来说，我们可以通过换元令$u=x^{2}$进行压缩，变为：$f_{e}^{‘}(u)=a_{0}+a_{2}u+\dots+a_{n-2}u^{\frac{n-2}{2}}$。同样，对于$f_{o}(x)$，我们只需先提出一个$x$，也可化成相同的形式。因此有：</p>
+<script type="math/tex; mode=display">\begin{cases}
+f(x)=f_{e}^{'}(x^{2})+xf_{o}^{'}(x^{2})\\ \\
+f(-x)=f_{e}^{'}(x^{2})-xf_{o}^{'}(x^{2})
+\end{cases}</script><p>要想在计算上节省代价，我们应当选择成对的点$(x,-x)$，这样在计算的时候可以共用同一组$f_{e}^{‘}(x^{2}),f_{o}^{‘}(x^{2})$，就成功将规模压缩成了原本的一半。<br>接下来所要考虑的是如何使它能够递归下去。如果我们一开始点集是$(x_{i},-x_{i})$，平方后就有：${x_{i}}^{2}=(-x_{i})^{2}$，也就是会“合并”为更小的点集，为保证能递归下去：</p>
+<ol>
+<li>有$n$个点，他们得两两配对。</li>
+<li>平方后要得到规模减半的点，依然能配对。</li>
+<li>…</li>
+<li>一直递归$\lceil \omega=\log_{2}n \rceil$层，最后缩减到1个点。</li>
+</ol>
+<p>为了让选择的点集在平方运算下仍然落在同类的点集里，且也能两两配对，一种自然且常用的选择是：把初始点选为某个$k$-次单位根集合，且令$k=2^{\omega}$，具体则是令$\omega_{k}^{j}=e^{-{\frac{2\pi i}{k}}},x\in\{\omega_{k}^{0},\omega_{k}^{1},\dots,\omega_{k}^{k-1}\}$则有$(\omega_{k}^{j})^{2}=\omega_{\frac{k}{2}}^{j},\left( \omega_{\frac{k}{2}}^{j} \right)^{2}=\omega_{\frac{k}{4}}^{j},\dots$直到$\omega_{1}^{j}=1$。<br>这个时候我们再回头考虑成对点$(x_{i},-x_{i})$，由于其为$k$-次单位根，根据性质可以写成$\left( \omega_{k}^{j},\omega_{k}^{j+{\frac{k}{2}}} \right)$，此时有：</p>
+<script type="math/tex; mode=display">\begin{cases}
+f(\omega_{k}^{j})=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)+\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)\\ \\
+f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)-\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)
+\end{cases}</script><p>这正是FFT的<strong>蝴蝶变换</strong>。每一层递归都由若干个蝴蝶组成，层层叠加，最终完成$O(n\log n)$的快速计算。</p>
 ]]></content>
       <categories>
-        <category>机器学习</category>
+        <category>algorithm</category>
       </categories>
       <tags>
         <tag>学习</tag>
-        <tag>深度学习</tag>
+        <tag>Crypto</tag>
+        <tag>拉格朗日</tag>
       </tags>
   </entry>
 </search>
