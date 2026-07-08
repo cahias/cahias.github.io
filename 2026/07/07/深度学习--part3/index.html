@@ -20,21 +20,27 @@
     var CONFIG = {"hostname":"n1gh7ma12e.cn","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～">
+  <meta name="description" content="在part2中讲到了学习算法，这部分讲一讲和此相关的一些算法和参数相关的设定问题。神经网络的学习的目的是找到使损失函数的值尽可能小的参数。这是寻找最优参数的问题，解决这个问题的过程称为最优化 （ optimization ）。遗憾的是，神经网络的最优化问题非常难。这是因为参数空间非常复杂，无法轻易找到最优解（无法使用那种通过解数学式一下子就求得最小值的方法）。而且，在深度神经网络中，参数的数量非常">
 <meta property="og:type" content="article">
-<meta property="og:title" content="应急响应">
-<meta property="og:url" content="http://n1gh7ma12e.cn/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/index.html">
+<meta property="og:title" content="深度学习--part3">
+<meta property="og:url" content="http://n1gh7ma12e.cn/2026/07/07/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part3/index.html">
 <meta property="og:site_name" content="N1gh7ma12e的小站">
-<meta property="og:description" content="最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～">
+<meta property="og:description" content="在part2中讲到了学习算法，这部分讲一讲和此相关的一些算法和参数相关的设定问题。神经网络的学习的目的是找到使损失函数的值尽可能小的参数。这是寻找最优参数的问题，解决这个问题的过程称为最优化 （ optimization ）。遗憾的是，神经网络的最优化问题非常难。这是因为参数空间非常复杂，无法轻易找到最优解（无法使用那种通过解数学式一下子就求得最小值的方法）。而且，在深度神经网络中，参数的数量非常">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-12-29T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-01-01T01:44:50.930Z">
+<meta property="og:image" content="http://n1gh7ma12e.cn/images/function.png">
+<meta property="og:image" content="http://n1gh7ma12e.cn/images/gredient.png">
+<meta property="og:image" content="http://n1gh7ma12e.cn/images/SGD_fresh.png">
+<meta property="og:image" content="http://n1gh7ma12e.cn/images/Momnetum.png">
+<meta property="og:image" content="http://n1gh7ma12e.cn/images/momentum_fresh.png">
+<meta property="article:published_time" content="2026-07-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-08T01:56:01.690Z">
 <meta property="article:author" content="N1gh7ma12e">
 <meta property="article:tag" content="学习">
-<meta property="article:tag" content="Web">
+<meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://n1gh7ma12e.cn/images/function.png">
 
-<link rel="canonical" href="http://n1gh7ma12e.cn/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/">
+<link rel="canonical" href="http://n1gh7ma12e.cn/2026/07/07/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part3/">
 
 
 <script id="page-configurations">
@@ -47,7 +53,7 @@
   };
 </script>
 
-  <title>应急响应 | N1gh7ma12e的小站</title>
+  <title>深度学习--part3 | N1gh7ma12e的小站</title>
   
 
 
@@ -201,7 +207,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://n1gh7ma12e.cn/2025/12/30/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/">
+    <link itemprop="mainEntityOfPage" href="http://n1gh7ma12e.cn/2026/07/07/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -214,7 +220,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          应急响应
+          深度学习--part3
         </h1>
 
         <div class="post-meta">
@@ -224,14 +230,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2025-12-30 00:00:00" itemprop="dateCreated datePublished" datetime="2025-12-30T00:00:00+08:00">2025-12-30</time>
+              <time title="创建时间：2026-07-07 00:00:00" itemprop="dateCreated datePublished" datetime="2026-07-07T00:00:00+08:00">2026-07-07</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-01-01 09:44:50" itemprop="dateModified" datetime="2026-01-01T09:44:50+08:00">2026-01-01</time>
+                <time title="修改时间：2026-07-08 09:56:01" itemprop="dateModified" datetime="2026-07-08T09:56:01+08:00">2026-07-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +245,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/" itemprop="url" rel="index"><span itemprop="name">应急响应</span></a>
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
                 </span>
             </span>
 
@@ -249,14 +255,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>937</span>
+              <span>2.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -268,18 +274,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>最近闲下来啦，可以想学什么学什么了，可能近期会频繁更blog，涉及各个不同的方向（我要多开！）。这篇学习一下应急响应相关的知识，感觉挺有趣的～<br><span id="more"></span></p>
-<h1 id="WebShell"><a href="#WebShell" class="headerlink" title="WebShell"></a>WebShell</h1><p>大概就是可以通过Web交互的shell吧？将WebShell放入网站服务器的Web目录后，就可以利用工具连接shell，获取到目标服务器的命令执行环境。<br>常见的WebShell形式有PHP，ASP，JSP，ASPX，JSPX等<br>最熟悉的也就是PHP的一句话木马：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;pwd&#x27;</span>]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure><br>如果是入侵者想利用WebShell控制服务器，得有几个前提：</p>
-<ul>
-<li>WebShell被成功放入服务器的Web目录，且攻击者知道WebShell的具体位置并能访问。</li>
-<li>WebShell能被正常解析</li>
-<li>WebShell没有被清除<h2 id="如何发现WebShell"><a href="#如何发现WebShell" class="headerlink" title="如何发现WebShell"></a>如何发现WebShell</h2>我的认知理解就是，既然WebShell常见的有PHP等类型，那首先我们可以通过寻找这些文件来排查，看看有没有命名可疑的相关文件，或者最近有过修改的文件：<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /var/www/html --name &#x27;*.jsp&#x27;</span><br></pre></td></tr></table></figure>
-其次就是根据WebShell的一些常见特征去寻找，比如说危险函数<code>eval()</code>，或者是对文件，网络进行操作的函数，还有进行编码的。</li>
-<li>PHP: eval(), system(), exec(), shell_exec(), passthru(), assert(),fopen(),fwrite(),file_get_contents(),base64_decode(), file_put_contents(),curl_exec(),fsockopen()</li>
-<li>ASP: Execute(), Eval(), CreateObject(),FileSystemObject,WinHttp.WinHttpRequest</li>
-<li>JSP: Runtime.getRuntime().exec()<br>如果是WebShell做了混淆，认不出来，该怎么办？<br>可以先看看有无可以的进程在运行，或者可以根据WebShell特有的HTTP请求/响应去识别是否为WebShell。还可以根据网站的Web日志来分析可疑的连接。<br>还可以用D盾等工具进行排查。</li>
-</ul>
-<p>持续更新中…</p>
+        <p>在part2中讲到了学习算法，这部分讲一讲和此相关的一些算法和参数相关的设定问题。<br>神经网络的学习的目的是找到使损失函数的值尽可能小的参数。这是寻找最优参数的问题，解决这个问题的过程称为最优化 （ optimization ）。遗憾的是，神经网络的最优化问题非常难。这是因为参数空间非常复杂，无法轻易找到最优解（无法使用那种通过解数学式一下子就求得最小值的方法）。而且，在深度神经网络中，参数的数量非常庞大，导致最优化问题更加复杂。<br><span id="more"></span></p>
+<h1 id="SGD"><a href="#SGD" class="headerlink" title="SGD"></a>SGD</h1><p>在part2中，为了找到最优参数，我们将参数的梯度（导数）作为了线索。使用参数的梯度，沿梯度方向更新参数，并重复这个步骤多次，从而逐渐靠近最优参数，这个过程称为随机梯度下降法 （ stochastic gradient descent ），简称SGD。<br>令需要更新的权重参数记为$W$，损失函数关于$W$的梯度记为$\frac{\partial L}{\partial W}$，$\eta$为学习率（一般取0.01或0.001这些事先决定好的值) 。用数学式可以将SGD的更新方式写为：</p>
+<script type="math/tex; mode=display">\mathit{W}\leftarrow \mathit{W}-\eta \frac{\partial L}{\partial \mathit{W}}</script><p>用python实现如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SGD</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, lr=<span class="number">0.01</span></span>):</span><br><span class="line">		<span class="variable language_">self</span>.lr = lr <span class="comment"># 学习率</span></span><br><span class="line">		</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self, params, grads</span>):</span><br><span class="line">		<span class="keyword">for</span> key <span class="keyword">in</span> params.keys():</span><br><span class="line">			<span class="comment"># 参数 params和 grads都是字典型变量，分别保存权重参数和梯度</span></span><br><span class="line">			params[key] -= <span class="variable language_">self</span>.lr * grads[key] </span><br></pre></td></tr></table></figure><br>SGD是朝着梯度方向只前进一定距离的简单方法，在学习过程中，会不断的调用它。使用这个SGD类，可以按如下方式进行神经网络的参数的更新：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">network = TwoLayerNet(...)</span><br><span class="line">optimizer = SGD() <span class="comment"># 进行参数优化的方法实体，参数的更新由 optimizer负责完成</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10000</span>):</span><br><span class="line">	...</span><br><span class="line">	x_batch, t_batch = get_mini_batch(...) <span class="comment"># mini-batch</span></span><br><span class="line">	grads = network.gradient(x_batch, t_batch)</span><br><span class="line">	params = network.params</span><br><span class="line">	optimizer.update(params, grads)</span><br><span class="line">	...</span><br></pre></td></tr></table></figure><br>同理，之后的一些学习方法，只需要将<code>optimizer</code>替换为对应的方法实体即可。<br>SGD虽然实现简单，但是在解决某些问题时会低效，比如如下函数：</p>
+<script type="math/tex; mode=display">f(x,y)=\frac{1}{20}x^{2}+y^{2}</script><p>函数是向$x$轴方向延伸的“碗”状函数，等高线呈向$x$轴方向延伸的椭圆状：<br><img src="/images/function.png" alt><br>如果用图表示梯度的话，则如下图所示。这个梯度的特征是，$y$轴方向上大，$x$轴方向上小。换句话说，就是$y$轴方向的坡度大，而$x$轴方向的坡度小。这里需要注意的是，虽然上式最小值在$(x, y) = (0, 0)$处，但是图中的梯度在很多地方并没有指向$(0, 0)$。<br><img src="/images/gredient.png" alt><br>由于函数的形状非均向，梯度的方向并没有指向最小值的方向，SGD在搜索时会非常低效。搜索路径会呈“之”字型移动。如下图：<br><img src="/images/SGD_fresh.png" alt></p>
+<h1 id="Momentum"><a href="#Momentum" class="headerlink" title="Momentum"></a>Momentum</h1><p>Momentum是“动量”的意思，和物理有关。用数学式表示Momentum方法，令需要更新的权重参数记为$\mathit{W}$，损失函数关于$\mathit{W}$的梯度记为$\frac{\partial L}{\partial \mathit{W}}$，$\eta$为学习率，$\mathit{v}$代表物理上的速度如下所示。</p>
+<script type="math/tex; mode=display">\begin{align}
+\mathit{v}\leftarrow \alpha \mathit{v}-\eta\frac{\partial L}{\partial \mathit{W}} \\
+\mathit{W}\leftarrow \mathit{W}+\mathit{v}
+\end{align}</script><p>上式表示了物体在梯度方向上受力，在这个力的作用下，物体的速度增加这一物理法则。如图所示，Momentum方法给人的感觉就像是小球在地面上滚动。<br><img src="/images/Momnetum.png" alt><br>式中有 $\alpha v$ 这一项。在物体不受任何力时，该项承担使物体逐渐减速的任务（$\alpha$设定为0.9之类的值），对应物理上的地面摩擦或空气阻力。<br>python实现如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">CLass Momentum：</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, lr=<span class="number">0.01</span>, momentum=<span class="number">0.9</span></span>)：</span><br><span class="line">		<span class="variable language_">self</span>.lr = lr</span><br><span class="line">		<span class="variable language_">self</span>.momentum = momentum</span><br><span class="line">		<span class="variable language_">self</span>.v = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self, params, grads</span>):</span><br><span class="line">		<span class="keyword">if</span> <span class="variable language_">self</span>.v <span class="keyword">is</span> <span class="literal">None</span>：</span><br><span class="line">			<span class="variable language_">self</span>.v = &#123;&#125;</span><br><span class="line">		<span class="keyword">for</span> key,val <span class="keyword">in</span> params.items()：</span><br><span class="line">			<span class="variable language_">self</span>.v[key] = np.zeros_Like(val)</span><br><span class="line">		<span class="keyword">for</span> key <span class="keyword">in</span> params.keys()：</span><br><span class="line">			<span class="variable language_">self</span>.v[key] = <span class="variable language_">self</span>.momentum * <span class="variable language_">self</span>.v[key] - <span class="variable language_">self</span>.lr * grads[key]</span><br><span class="line">			params[key] += <span class="variable language_">self</span>.v[key]</span><br></pre></td></tr></table></figure><br>更新路径如下图。和SGD相比，我们发现“之”字形的“程度”减轻了。这是因为虽然$x$轴方向上受到的力非常小，但是一直在同一方向上受力，所以朝同一个方向会有一定的加速。反过来，虽然$y$轴方向上受到的力很大，但是因为交互地受到正方向和反方向的力，它们会互相抵消，所以$y$轴方向上的速度不稳定。因此，和SGD时的情形相比，可以更快地朝$x$轴方向靠近，减弱“之”字形的变动程度。<br><img src="/images/momentum_fresh.png" alt></p>
 
     </div>
 
@@ -290,7 +293,7 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag"># 学习</a>
-              <a href="/tags/Web/" rel="tag"># Web</a>
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
           </div>
 
         
@@ -299,13 +302,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2025/09/02/%E6%B2%B9%E9%86%8B%E7%AD%BE%E5%90%8D%E7%B3%BB%E7%BB%9F/" rel="prev" title="油醋签名系统">
-      <i class="fa fa-chevron-left"></i> 油醋签名系统
+    <a href="/2026/06/09/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0--part2/" rel="prev" title="深度学习--part2">
+      <i class="fa fa-chevron-left"></i> 深度学习--part2
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2025/12/31/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/" rel="next" title="年度总结">
-      年度总结 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -364,7 +364,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WebShell"><span class="nav-number">1.</span> <span class="nav-text">WebShell</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%8F%91%E7%8E%B0WebShell"><span class="nav-number">1.1.</span> <span class="nav-text">如何发现WebShell</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SGD"><span class="nav-number">1.</span> <span class="nav-text">SGD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Momentum"><span class="nav-number">2.</span> <span class="nav-text">Momentum</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
