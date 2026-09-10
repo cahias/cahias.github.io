@@ -1,6 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>未命名</title>
+    <url>/2026/09/10/AES%E4%B8%8ESquare%20Attack/</url>
+    <content><![CDATA[<p>对AES加密流程的介绍，以及对四轮AES的Square Attack分析。<br><span id="more"></span></p>
+<h1 id="AES"><a href="#AES" class="headerlink" title="AES"></a>AES</h1><p>首先 AES 属于对称密码中的分组加密算法，是最著名的 SPN 结构分组密码。在 AES 标准中，分组长度只能是 128 位（ 16 字节）。密钥的长度可以使用 128 位、 192 位或 256 位。对应的推荐加密轮数：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>AES</th>
+<th>密钥长度</th>
+<th>分组长度</th>
+<th>加密轮数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AES-128</td>
+<td>128位</td>
+<td>128位</td>
+<td>10</td>
+</tr>
+<tr>
+<td>AES-192</td>
+<td>192位</td>
+<td>128位</td>
+<td>12</td>
+</tr>
+<tr>
+<td>AES-256</td>
+<td>256位</td>
+<td>128位</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在下述的介绍和分析中，我们均使用 AES-128 作为分析对象。</p>
+<h2 id="密钥拓展（Key-Expansion）"><a href="#密钥拓展（Key-Expansion）" class="headerlink" title="密钥拓展（Key Expansion）"></a>密钥拓展（Key Expansion）</h2><p>AES 在加密前，需要根据初始密钥生成每一轮加密的轮密钥（Round Keys）。介绍密钥拓展的详细操作之前，先需要介绍以下函数操作：</p>
+<ul>
+<li>RotWord</li>
+<li>SubWord</li>
+<li>Rcon<h3 id="RotWord"><a href="#RotWord" class="headerlink" title="RotWord"></a>RotWord</h3>顾名思义，就是进行移位操作。其函数输入为 4 bytes，输出同为4 bytes。具体操作即将字节进行循环左移一位：<script type="math/tex; mode=display">[0\quad 1\quad 2\quad 3]\longrightarrow [1\quad 2\quad 3\quad 0]</script><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">RotWord</span><span class="params">(<span class="type">uint8_t</span> *word)</span> &#123;</span><br><span class="line">    <span class="type">uint8_t</span> t = word[<span class="number">0</span>];</span><br><span class="line">    word[<span class="number">0</span>] = word[<span class="number">1</span>];</span><br><span class="line">    word[<span class="number">1</span>] = word[<span class="number">2</span>];</span><br><span class="line">    word[<span class="number">2</span>] = word[<span class="number">3</span>];</span><br><span class="line">    word[<span class="number">3</span>] = t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="SubWord"><a href="#SubWord" class="headerlink" title="SubWord"></a>SubWord</h3>输入为 4 bytes。具体则是对每一bytes 进行S盒映射。即：$x \to S[x]$<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">uint8_t</span> sbox[<span class="number">256</span>] = &#123;</span><br><span class="line">    <span class="number">0x63</span>,<span class="number">0x7c</span>,<span class="number">0x77</span>,<span class="number">0x7b</span>,<span class="number">0xf2</span>,<span class="number">0x6b</span>,<span class="number">0x6f</span>,<span class="number">0xc5</span>,<span class="number">0x30</span>,<span class="number">0x01</span>,<span class="number">0x67</span>,<span class="number">0x2b</span>,<span class="number">0xfe</span>,<span class="number">0xd7</span>,<span class="number">0xab</span>,<span class="number">0x76</span>,</span><br><span class="line">    <span class="number">0xca</span>,<span class="number">0x82</span>,<span class="number">0xc9</span>,<span class="number">0x7d</span>,<span class="number">0xfa</span>,<span class="number">0x59</span>,<span class="number">0x47</span>,<span class="number">0xf0</span>,<span class="number">0xad</span>,<span class="number">0xd4</span>,<span class="number">0xa2</span>,<span class="number">0xaf</span>,<span class="number">0x9c</span>,<span class="number">0xa4</span>,<span class="number">0x72</span>,<span class="number">0xc0</span>,</span><br><span class="line">    <span class="number">0xb7</span>,<span class="number">0xfd</span>,<span class="number">0x93</span>,<span class="number">0x26</span>,<span class="number">0x36</span>,<span class="number">0x3f</span>,<span class="number">0xf7</span>,<span class="number">0xcc</span>,<span class="number">0x34</span>,<span class="number">0xa5</span>,<span class="number">0xe5</span>,<span class="number">0xf1</span>,<span class="number">0x71</span>,<span class="number">0xd8</span>,<span class="number">0x31</span>,<span class="number">0x15</span>,</span><br><span class="line">    <span class="number">0x04</span>,<span class="number">0xc7</span>,<span class="number">0x23</span>,<span class="number">0xc3</span>,<span class="number">0x18</span>,<span class="number">0x96</span>,<span class="number">0x05</span>,<span class="number">0x9a</span>,<span class="number">0x07</span>,<span class="number">0x12</span>,<span class="number">0x80</span>,<span class="number">0xe2</span>,<span class="number">0xeb</span>,<span class="number">0x27</span>,<span class="number">0xb2</span>,<span class="number">0x75</span>,</span><br><span class="line">    <span class="number">0x09</span>,<span class="number">0x83</span>,<span class="number">0x2c</span>,<span class="number">0x1a</span>,<span class="number">0x1b</span>,<span class="number">0x6e</span>,<span class="number">0x5a</span>,<span class="number">0xa0</span>,<span class="number">0x52</span>,<span class="number">0x3b</span>,<span class="number">0xd6</span>,<span class="number">0xb3</span>,<span class="number">0x29</span>,<span class="number">0xe3</span>,<span class="number">0x2f</span>,<span class="number">0x84</span>,</span><br><span class="line">    <span class="number">0x53</span>,<span class="number">0xd1</span>,<span class="number">0x00</span>,<span class="number">0xed</span>,<span class="number">0x20</span>,<span class="number">0xfc</span>,<span class="number">0xb1</span>,<span class="number">0x5b</span>,<span class="number">0x6a</span>,<span class="number">0xcb</span>,<span class="number">0xbe</span>,<span class="number">0x39</span>,<span class="number">0x4a</span>,<span class="number">0x4c</span>,<span class="number">0x58</span>,<span class="number">0xcf</span>,</span><br><span class="line">    <span class="number">0xd0</span>,<span class="number">0xef</span>,<span class="number">0xaa</span>,<span class="number">0xfb</span>,<span class="number">0x43</span>,<span class="number">0x4d</span>,<span class="number">0x33</span>,<span class="number">0x85</span>,<span class="number">0x45</span>,<span class="number">0xf9</span>,<span class="number">0x02</span>,<span class="number">0x7f</span>,<span class="number">0x50</span>,<span class="number">0x3c</span>,<span class="number">0x9f</span>,<span class="number">0xa8</span>,</span><br><span class="line">    <span class="number">0x51</span>,<span class="number">0xa3</span>,<span class="number">0x40</span>,<span class="number">0x8f</span>,<span class="number">0x92</span>,<span class="number">0x9d</span>,<span class="number">0x38</span>,<span class="number">0xf5</span>,<span class="number">0xbc</span>,<span class="number">0xb6</span>,<span class="number">0xda</span>,<span class="number">0x21</span>,<span class="number">0x10</span>,<span class="number">0xff</span>,<span class="number">0xf3</span>,<span class="number">0xd2</span>,</span><br><span class="line">    <span class="number">0xcd</span>,<span class="number">0x0c</span>,<span class="number">0x13</span>,<span class="number">0xec</span>,<span class="number">0x5f</span>,<span class="number">0x97</span>,<span class="number">0x44</span>,<span class="number">0x17</span>,<span class="number">0xc4</span>,<span class="number">0xa7</span>,<span class="number">0x7e</span>,<span class="number">0x3d</span>,<span class="number">0x64</span>,<span class="number">0x5d</span>,<span class="number">0x19</span>,<span class="number">0x73</span>,</span><br><span class="line">    <span class="number">0x60</span>,<span class="number">0x81</span>,<span class="number">0x4f</span>,<span class="number">0xdc</span>,<span class="number">0x22</span>,<span class="number">0x2a</span>,<span class="number">0x90</span>,<span class="number">0x88</span>,<span class="number">0x46</span>,<span class="number">0xee</span>,<span class="number">0xb8</span>,<span class="number">0x14</span>,<span class="number">0xde</span>,<span class="number">0x5e</span>,<span class="number">0x0b</span>,<span class="number">0xdb</span>,</span><br><span class="line">    <span class="number">0xe0</span>,<span class="number">0x32</span>,<span class="number">0x3a</span>,<span class="number">0x0a</span>,<span class="number">0x49</span>,<span class="number">0x06</span>,<span class="number">0x24</span>,<span class="number">0x5c</span>,<span class="number">0xc2</span>,<span class="number">0xd3</span>,<span class="number">0xac</span>,<span class="number">0x62</span>,<span class="number">0x91</span>,<span class="number">0x95</span>,<span class="number">0xe4</span>,<span class="number">0x79</span>,</span><br><span class="line">    <span class="number">0xe7</span>,<span class="number">0xc8</span>,<span class="number">0x37</span>,<span class="number">0x6d</span>,<span class="number">0x8d</span>,<span class="number">0xd5</span>,<span class="number">0x4e</span>,<span class="number">0xa9</span>,<span class="number">0x6c</span>,<span class="number">0x56</span>,<span class="number">0xf4</span>,<span class="number">0xea</span>,<span class="number">0x65</span>,<span class="number">0x7a</span>,<span class="number">0xae</span>,<span class="number">0x08</span>,</span><br><span class="line">    <span class="number">0xba</span>,<span class="number">0x78</span>,<span class="number">0x25</span>,<span class="number">0x2e</span>,<span class="number">0x1c</span>,<span class="number">0xa6</span>,<span class="number">0xb4</span>,<span class="number">0xc6</span>,<span class="number">0xe8</span>,<span class="number">0xdd</span>,<span class="number">0x74</span>,<span class="number">0x1f</span>,<span class="number">0x4b</span>,<span class="number">0xbd</span>,<span class="number">0x8b</span>,<span class="number">0x8a</span>,</span><br><span class="line">    <span class="number">0x70</span>,<span class="number">0x3e</span>,<span class="number">0xb5</span>,<span class="number">0x66</span>,<span class="number">0x48</span>,<span class="number">0x03</span>,<span class="number">0xf6</span>,<span class="number">0x0e</span>,<span class="number">0x61</span>,<span class="number">0x35</span>,<span class="number">0x57</span>,<span class="number">0xb9</span>,<span class="number">0x86</span>,<span class="number">0xc1</span>,<span class="number">0x1d</span>,<span class="number">0x9e</span>,</span><br><span class="line">    <span class="number">0xe1</span>,<span class="number">0xf8</span>,<span class="number">0x98</span>,<span class="number">0x11</span>,<span class="number">0x69</span>,<span class="number">0xd9</span>,<span class="number">0x8e</span>,<span class="number">0x94</span>,<span class="number">0x9b</span>,<span class="number">0x1e</span>,<span class="number">0x87</span>,<span class="number">0xe9</span>,<span class="number">0xce</span>,<span class="number">0x55</span>,<span class="number">0x28</span>,<span class="number">0xdf</span>,</span><br><span class="line">    <span class="number">0x8c</span>,<span class="number">0xa1</span>,<span class="number">0x89</span>,<span class="number">0x0d</span>,<span class="number">0xbf</span>,<span class="number">0xe6</span>,<span class="number">0x42</span>,<span class="number">0x68</span>,<span class="number">0x41</span>,<span class="number">0x99</span>,<span class="number">0x2d</span>,<span class="number">0x0f</span>,<span class="number">0xb0</span>,<span class="number">0x54</span>,<span class="number">0xbb</span>,<span class="number">0x16</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">SubWord</span><span class="params">(<span class="type">uint8_t</span> *word)</span> &#123;</span><br><span class="line">    word[<span class="number">0</span>] = sbox[word[<span class="number">0</span>]];</span><br><span class="line">    word[<span class="number">1</span>] = sbox[word[<span class="number">1</span>]];</span><br><span class="line">    word[<span class="number">2</span>] = sbox[word[<span class="number">2</span>]];</span><br><span class="line">    word[<span class="number">3</span>] = sbox[word[<span class="number">3</span>]];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Rcon"><a href="#Rcon" class="headerlink" title="Rcon"></a>Rcon</h3><code>Rcon</code> 是轮密钥扩展中用于引入非线性的一组轮常量，形式为一个 4 字节的 word，其中只有第一个字节非零：<script type="math/tex">Rcon[i]=[x^{i-1},0, 0,0]</script><br>其中$x^{i-1}$在$\mathbb{F}_{2^{8}}$上运算，模多项式为$m(x)=x^8+x^4+x^3+x+1$<br>实现一般直接预计算后存入数组<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">const</span> <span class="type">uint8_t</span> Rcon[<span class="number">11</span>] = &#123;</span><br><span class="line">    <span class="number">0x00</span>, <span class="number">0x01</span>, <span class="number">0x02</span>, <span class="number">0x04</span>, <span class="number">0x08</span>, <span class="number">0x10</span>, <span class="number">0x20</span>, <span class="number">0x40</span>, <span class="number">0x80</span>, <span class="number">0x1B</span>, <span class="number">0x36</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="扩展流程"><a href="#扩展流程" class="headerlink" title="扩展流程"></a>扩展流程</h3>AES-128 首先接收 16 字节的初始密钥，并将其填入 $4\times 4$的矩阵中。如对于<code>0x000102030405060708090a0b0c0d0e0f</code>，将其排入矩阵中即：<script type="math/tex; mode=display">\begin{bmatrix}
+00& 04& 08& 0c \\
+01& 05& 09& 0d \\
+02& 06& 0a& 0e \\
+03& 07& 0b& 0f\\
+\end{bmatrix}</script>对于新一轮密钥的生成，我们需要对前一轮密钥的矩阵进行以下操作（第一轮则是在初始密钥上进行操作）。</li>
+<li>对最后一列依次进行 RotWord 和 SubWord</li>
+<li>异或上 Rcon(Round)</li>
+<li>前两步得到的结果异或上第一列的值<br>经过以上的操作后，即可得到新一轮的第一列。举个例子：<br>初始密钥为：<script type="math/tex; mode=display">\begin{bmatrix}
+00& 04& 08& 0c \\
+01& 05& 09& 0d \\
+02& 06& 0a& 0e \\
+03& 07& 0b& 0f\\
+\end{bmatrix}</script>对最后一列进行 RotWord 和 SubWord：<script type="math/tex; mode=display">\begin{bmatrix}
+0c \\
+0d \\
+0e \\
+0f
+\end{bmatrix}\xrightarrow{RotWord}\begin{bmatrix}
+0d \\
+0e \\
+0f \\
+0c
+\end{bmatrix}\xrightarrow{SubWord}\begin{bmatrix}
+d7 \\
+ab \\
+76 \\
+fe
+\end{bmatrix}</script>异或上 Rcon(Round) 即 $Rcon[1]$：<script type="math/tex; mode=display">\begin{bmatrix}
+d7 \\
+ab \\
+76 \\
+fe
+\end{bmatrix}\oplus \begin{bmatrix}
+01 \\
+00 \\
+00 \\
+00
+\end{bmatrix}=\begin{bmatrix}
+d6 \\
+ab \\
+76 \\
+fe
+\end{bmatrix}</script>异或上第一列的值:<script type="math/tex; mode=display">\begin{bmatrix}
+d6 \\
+ab \\
+76 \\
+fe
+\end{bmatrix}\oplus \begin{bmatrix}
+00 \\
+01 \\
+02 \\
+03
+\end{bmatrix}=\begin{bmatrix}
+d6 \\
+aa \\
+74 \\
+fd
+\end{bmatrix}</script>所以新一轮（第一轮）密钥的第一列即为：<script type="math/tex; mode=display">\begin{bmatrix}
+d6 \\
+aa \\
+74 \\
+fd
+\end{bmatrix}</script>剩下的三列，则是将前一列和上一轮的相同列进行异或。<br>如第二列：<script type="math/tex; mode=display">\begin{bmatrix}
+d6 \\
+aa \\
+74 \\
+fd
+\end{bmatrix}\oplus \begin{bmatrix}
+04 \\
+05 \\
+06 \\
+07
+\end{bmatrix}=\begin{bmatrix}
+d2 \\
+af \\
+72 \\
+fa
+\end{bmatrix}</script>同样的操作，可以得到第一轮密钥为：<script type="math/tex; mode=display">\begin{bmatrix}
+d6 & d2 & da & d6 \\
+aa & af & a6 & ab \\
+74 & 72 & 78 & 76 \\
+fd & fa & f1 & fe
+\end{bmatrix}</script></li>
+</ul>
+]]></content>
+      <categories>
+        <category>block cipher</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>Crypto</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Crypto常用工具篇</title>
     <url>/2025/08/25/Crypto%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E7%AF%87/</url>
     <content><![CDATA[<p>Crypto的工具太多啦，经常想不起来一些工具是怎么使用的，这里简单记录一下一些工具的使用。<br><span id="more"></span></p>
@@ -119,6 +258,68 @@ leak_{i}=\left( \sum_{j}a_{j}\cdot (x_{i}^{b_{j}} \mod p) \right)*G</script><p>�
       <tags>
         <tag>学习</tag>
         <tag>Web</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>拉格朗日插值法与傅立叶变换</title>
+    <url>/2025/08/21/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%8F%92%E5%80%BC%E6%B3%95%E4%B8%8E%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2/</url>
+    <content><![CDATA[<p>在中学阶段我们常会听老师说起这样一个定理：<strong>n个点值确定唯一的n-1次多项式函数</strong>。而如何确定该多项式函数？我们会使用解线性方程组的方法。<br><span id="more"></span><br>在中学阶段，我们学到的确定多项式函数的方法往往是这样的：</p>
+<ol>
+<li>已知有$n$个点，确定$n-1$次多项式函数</li>
+<li>将$n$个点分别带入形如$y=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的式子</li>
+<li>联立这些个方程，解出每一项的系数$a_{i}$</li>
+</ol>
+<h1 id="拉格朗日插值法"><a href="#拉格朗日插值法" class="headerlink" title="拉格朗日插值法"></a>拉格朗日插值法</h1><p>联立方程求解虽然很强势，但这还是太吃操作了，那有没有在计算机上更简单粗暴的办法呢？有的，兄弟，有的。拉格朗日插值法就是这样的一个方法，他不需要消元等任何复杂的操作，只需要把数往里一代就行了。</p>
+<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><p>拉格朗日插值法的核心思路也很简单粗暴：利用点值的可加性$(f+g)(x_{i})=f(x_{i})+g(x_{i})$。看上去可能不太明白在说什么，举个例子就清楚了。<br>对于一个多项式函数$f(x)=x^2$和一个多项式函数$g(x)=2x+1$，那么就有$(f+g)(x)=x^{2}+2x+1$。我们考虑他们在取值为$x=1,2,3$的时候，分别有：</p>
+<script type="math/tex; mode=display">\begin{aligned}
+&f(1,2,3)=(1,4,9)\\
+&g(1,2,3)=(3,5,7)\\
+&(f+g)(1,2,3)=(4,9,16)
+\end{aligned}</script><p>显然有$(1,4,9)+(3,5,7)=(4,9,16)$也就是$(f+g)(x_{i})=f(x_{i})+g(x_{i})$</p>
+<h2 id="思路及推导"><a href="#思路及推导" class="headerlink" title="思路及推导"></a>思路及推导</h2><p>既然可以有点值的可加性这样的性质，拉格朗日就有想法了：如果我有个多项式$f_{i}(x)$，对于每个多项式函数$f_{i}(x)$只在$x_{i}$的时候取值$y_{i}$，其他的时候取值为0（也就是$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$）。再把这个多项式函数依据点的可加性加起来，不就能得到个形如$(x_{i},y_{i})$的点所确定的多项式函数了吗？（天才的想法）</p>
+<p>于是说干就干，为了找到$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$这样的函数呢，首先我们得确保$f_{i}(x_{j})=0(i\not=j)$，所以$f_{i}(x)$应该要包含其余所有的$x-x_{j}$作为因式，我们把他们乘起来就有$g_{i}(x)=\prod_{j\not=i}(x-x_{j})$。但这个时候取值为$x_{i}$时，很明显$g_{i}(x_{i})=\prod_{j\not=i}(x_{i}-x_{j})$不一定等于$y_{i}$，所以为了让$f_{i}(x_{i})=y_{i}$我们得乘上一个$\frac{y_{i}}{g_{i}(x_{i})}$。所以：</p>
+<script type="math/tex; mode=display">f_{i}(x)=g_{i}(x)\cdot \frac{y_{i}}{g_{i}(x_{i})}=y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>最后对$f_{i}(x)$求和得到$f(x)$，也就是拉格朗日插值公式：</p>
+<script type="math/tex; mode=display">f(x)=\sum_{i=1}^{n}y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>如何直接获取$f(x)=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的系数呢？我们继续往下推导。首先要明确的是，每个$L_{i}(x)=\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}$本质上就是一个次数为$n$的多项式，其中分母是常数，分子是$(x-x_{1})(x-x_{2})\dots(x-x_{n})$。所以可以展开成：</p>
+<script type="math/tex; mode=display">L_{i}(x)=\frac{1}{\prod_{j\not=i(x_{i}-x_{j})}}\cdot (c_{i_{1}}x^{n-1}+c_{i_{2}}x^{n-2}+\dots+c_{i_{n-1}}x+c_{i_{n}})</script><p>由$f(x)=\sum_{i=1}^{n}y_{i}L_{i}(x)$最终可知其中系数：</p>
+<script type="math/tex; mode=display">a_{k}=\sum_{i=1}^{n}{\frac{y_{i}c_{i_{k}}}{\prod_{j\not=i(x_{i}-x_{j})}}}</script><h1 id="傅立叶变换"><a href="#傅立叶变换" class="headerlink" title="傅立叶变换"></a>傅立叶变换</h1><p>拉格朗日插值法虽然好用，但是时间复杂度为$O(n^{2})$，时间复杂度说不上高，但也不低。那我们想更进一步，就得拿出我们的核心加速工具：快速傅立叶变换。快速傅里叶变换即在离散傅里叶变换基础上通过选取合适的$x_{i}$​，使得可以快速求值。</p>
+<h2 id="离散傅立叶变换-DFT"><a href="#离散傅立叶变换-DFT" class="headerlink" title="离散傅立叶变换(DFT)"></a>离散傅立叶变换(DFT)</h2><p>在介绍快速傅立叶变换前得先介绍离散傅立叶变换：在信号处理与数值计算中，<strong>离散傅立叶变换（DFT, Discrete Fourier Transform）</strong> 是一个重要工具。给定长度为$N$的序列：$x=(x_{0},x_{1},\dots,x_{N-1})$</p>
+<p>其可以通过DFT转换成另一个长度为$N$的序列：$X_{k}=\sum_{n=0}^{N-1}x_{n}\omega_{N}^{kn},k={0,1,\dots,N-1}$（其中$\omega_{N}=e^{-{\frac{2\pi i}{N}}}$即为原始$N$次单位根）</p>
+<blockquote>
+<p> 在复数中，一个复数$\omega$如果满足$\omega^{N}=1$，则称其为$N$次单位根。所有$N$次单位根可以写成$\omega_{k}=e^{\frac{2\pi k}{N}},k=0,1,\dots,N-1$。这些解在复平面上<strong>均匀分布在单位圆上</strong>，相邻两个点之间夹角为$\frac{2\pi}{N}$。</p>
+<p> 若$\omega$为$N$次单位根，并且它的幂次$\omega,\omega^{2},\dots,\omega^{N-1}$恰好能够生成所有不同的$N$次单位根，则称$\omega$为原始$N$次单位根，常用的原始单位根是$\omega_{N}=e^{ \frac{2\pi i}{N} }$</p>
+</blockquote>
+<h2 id="快速傅立叶变换-FFT"><a href="#快速傅立叶变换-FFT" class="headerlink" title="快速傅立叶变换(FFT)"></a>快速傅立叶变换(FFT)</h2><p>说回如何快速计算，考虑任意多项式$f(x)=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}$有：</p>
+<script type="math/tex; mode=display">\begin{equation*}
+\begin{aligned}
+f(x)&=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}\\
+&=a_{0}+a_{2}x^{2}+a_{4}x^{4}+\dots+a_{n-2}x^{n-2}+a_{1}x+a_{3}x^{3}+a_{5}x^{5}+\dots+a_{n-1}x^{n-1}\\
+&=f_{e}(x)+f_{o}(x)
+\end{aligned}
+\end{equation*}</script><p>根据奇偶函数的性质，不难知道$f(-x)=f_{e}(x)-f_{o}(x)$。这意味着我们在计算一组$f_{e}(x),f_{o}(x)$后可以得到有$f(x)$和$f(-x)$两个点的值，但是$f_{e}(x),f_{o}(x)$的最高次项任然是$n-2,n-1$次，计算的时间复杂度并没有降低。这就需要下面的操作。</p>
+<p>对于$f_{e}(x)=a_{0}+a_{2}x^{2}+\dots+a_{n-2}x^{n-2}$来说，我们可以通过换元令$u=x^{2}$进行压缩，变为：$f_{e}^{‘}(u)=a_{0}+a_{2}u+\dots+a_{n-2}u^{\frac{n-2}{2}}$。同样，对于$f_{o}(x)$，我们只需先提出一个$x$，也可化成相同的形式。因此有：</p>
+<script type="math/tex; mode=display">\begin{cases}
+f(x)=f_{e}^{'}(x^{2})+xf_{o}^{'}(x^{2})\\ \\
+f(-x)=f_{e}^{'}(x^{2})-xf_{o}^{'}(x^{2})
+\end{cases}</script><p>要想在计算上节省代价，我们应当选择成对的点$(x,-x)$，这样在计算的时候可以共用同一组$f_{e}^{‘}(x^{2}),f_{o}^{‘}(x^{2})$，就成功将规模压缩成了原本的一半。<br>接下来所要考虑的是如何使它能够递归下去。如果我们一开始点集是$(x_{i},-x_{i})$，平方后就有：${x_{i}}^{2}=(-x_{i})^{2}$，也就是会“合并”为更小的点集，为保证能递归下去：</p>
+<ol>
+<li>有$n$个点，他们得两两配对。</li>
+<li>平方后要得到规模减半的点，依然能配对。</li>
+<li>…</li>
+<li>一直递归$\lceil \omega=\log_{2}n \rceil$层，最后缩减到1个点。</li>
+</ol>
+<p>为了让选择的点集在平方运算下仍然落在同类的点集里，且也能两两配对，一种自然且常用的选择是：把初始点选为某个$k$-次单位根集合，且令$k=2^{\omega}$，具体则是令$\omega_{k}^{j}=e^{-{\frac{2\pi i}{k}}},x\in\{\omega_{k}^{0},\omega_{k}^{1},\dots,\omega_{k}^{k-1}\}$则有$(\omega_{k}^{j})^{2}=\omega_{\frac{k}{2}}^{j},\left( \omega_{\frac{k}{2}}^{j} \right)^{2}=\omega_{\frac{k}{4}}^{j},\dots$直到$\omega_{1}^{j}=1$。<br>这个时候我们再回头考虑成对点$(x_{i},-x_{i})$，由于其为$k$-次单位根，根据性质可以写成$\left( \omega_{k}^{j},\omega_{k}^{j+{\frac{k}{2}}} \right)$，此时有：</p>
+<script type="math/tex; mode=display">\begin{cases}
+f(\omega_{k}^{j})=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)+\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)\\ \\
+f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)-\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)
+\end{cases}</script><p>这正是FFT的<strong>蝴蝶变换</strong>。每一层递归都由若干个蝴蝶组成，层层叠加，最终完成$O(n\log n)$的快速计算。</p>
+]]></content>
+      <categories>
+        <category>algorithm</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>Crypto</tag>
+        <tag>拉格朗日</tag>
       </tags>
   </entry>
   <entry>
@@ -285,6 +486,11 @@ x&(x>0) \\
 \mathit{v}\leftarrow \alpha \mathit{v}-\eta\frac{\partial L}{\partial \mathit{W}} \\
 \mathit{W}\leftarrow \mathit{W}+\mathit{v}
 \end{align}</script><p>上式表示了物体在梯度方向上受力，在这个力的作用下，物体的速度增加这一物理法则。如图所示，Momentum方法给人的感觉就像是小球在地面上滚动。<br><img src="/images/Momnetum.png" alt><br>式中有 $\alpha v$ 这一项。在物体不受任何力时，该项承担使物体逐渐减速的任务（$\alpha$设定为0.9之类的值），对应物理上的地面摩擦或空气阻力。<br>python实现如下：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">CLass Momentum：</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, lr=<span class="number">0.01</span>, momentum=<span class="number">0.9</span></span>)：</span><br><span class="line">		<span class="variable language_">self</span>.lr = lr</span><br><span class="line">		<span class="variable language_">self</span>.momentum = momentum</span><br><span class="line">		<span class="variable language_">self</span>.v = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self, params, grads</span>):</span><br><span class="line">		<span class="keyword">if</span> <span class="variable language_">self</span>.v <span class="keyword">is</span> <span class="literal">None</span>：</span><br><span class="line">			<span class="variable language_">self</span>.v = &#123;&#125;</span><br><span class="line">		<span class="keyword">for</span> key,val <span class="keyword">in</span> params.items()：</span><br><span class="line">			<span class="variable language_">self</span>.v[key] = np.zeros_Like(val)</span><br><span class="line">		<span class="keyword">for</span> key <span class="keyword">in</span> params.keys()：</span><br><span class="line">			<span class="variable language_">self</span>.v[key] = <span class="variable language_">self</span>.momentum * <span class="variable language_">self</span>.v[key] - <span class="variable language_">self</span>.lr * grads[key]</span><br><span class="line">			params[key] += <span class="variable language_">self</span>.v[key]</span><br></pre></td></tr></table></figure><br>更新路径如下图。和SGD相比，我们发现“之”字形的“程度”减轻了。这是因为虽然$x$轴方向上受到的力非常小，但是一直在同一方向上受力，所以朝同一个方向会有一定的加速。反过来，虽然$y$轴方向上受到的力很大，但是因为交互地受到正方向和反方向的力，它们会互相抵消，所以$y$轴方向上的速度不稳定。因此，和SGD时的情形相比，可以更快地朝$x$轴方向靠近，减弱“之”字形的变动程度。<br><img src="/images/momentum_fresh.png" alt></p>
+<h1 id="AdaGrad"><a href="#AdaGrad" class="headerlink" title="AdaGrad"></a>AdaGrad</h1><p>AdaGrad会为参数的每个元素适当地调整学习率，与此同时进行学习。用数学式表示AdaGrad的更新方法，令需要更新的权重参数记为$\mathit{W}$，损失函数关于$\mathit{W}$的梯度记为$\frac{\partial L}{\partial \mathit{W}}$，$\eta$为学习率，$h$保存了以前的所有梯度值的平方和。</p>
+<script type="math/tex; mode=display">\begin{align}
+\mathit{h}\leftarrow h+\frac{\partial L}{\partial \mathit{W}}\odot\frac{\partial L}{\partial \mathit{W}} \\
+\mathit{W}\leftarrow \mathit{W}-\eta\frac{1}{\sqrt{\mathit{h}}}\frac{\partial L}{\partial \mathit{W}}
+\end{align}</script><p>在更新参数时，通过乘以$\frac{1}{\sqrt{\mathit{h}}}$，就可以调整学习的尺度。这意味着，参数的元素中变动较大（被大幅更新）的元素的学习率将变小。也就是说，可以按参数的元素进行学习率衰减，使变动大的参数的学习率逐渐减小。(AdaGrad 会记录过去所有梯度的平方和。因此，学习越深入，更新的幅度就越小。实际上，如果无止境地学习，更新量就会变为 0，完全不再更新)<br>python实现如下：<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">AdaGrad</span>:</span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, lr=<span class="number">0.01</span></span>):</span><br><span class="line">		<span class="variable language_">self</span>.lr = lr</span><br><span class="line">		<span class="variable language_">self</span>.h = <span class="literal">None</span></span><br><span class="line">	<span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self, params, grads</span>):</span><br><span class="line">		<span class="keyword">if</span> <span class="variable language_">self</span>.h <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">			<span class="variable language_">self</span>.h = &#123;&#125;</span><br><span class="line">			<span class="keyword">for</span> key, val <span class="keyword">in</span> params.items():</span><br><span class="line">				<span class="variable language_">self</span>.h[key] = np.zero_like(val)</span><br><span class="line">		<span class="keyword">for</span> key <span class="keyword">in</span> params.keys():</span><br><span class="line">			<span class="variable language_">self</span>.h[key] += grads[key] * grads[key]</span><br><span class="line">			params[key] -= <span class="variable language_">self</span>.lr * grads[key] / (np.sqrt(<span class="variable language_">self</span>.h[key]) + <span class="number">1e-7</span>)</span><br></pre></td></tr></table></figure><br>最后一行加上了微小值 1e-7。这是为了防止当<code>self.h[key]</code>中有$0$时，将$0$用作除数的情况。在很多深度学习的框架中，这个微小值也可以设定为参数，但这里我们用的是1e-7这个固定值。<br><img src="/images/Adagrad.png" alt><br>由图结果可知，函数的取值高效地向着最小值移动。由于$y$轴方向上的梯度较大，因此刚开始变动较大，但是后面会根据这个较大的变动按比例进行调整，减小更新的步伐。因此，$y$轴方向上的更新程度被减弱，“之”字形的变动程度有所衰减。</p>
 ]]></content>
       <categories>
         <category>机器学习</category>
@@ -308,68 +514,6 @@ x&(x>0) \\
       <tags>
         <tag>学习</tag>
         <tag>Crypto</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>拉格朗日插值法与傅立叶变换</title>
-    <url>/2025/08/21/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%8F%92%E5%80%BC%E6%B3%95%E4%B8%8E%E5%82%85%E7%AB%8B%E5%8F%B6%E5%8F%98%E6%8D%A2/</url>
-    <content><![CDATA[<p>在中学阶段我们常会听老师说起这样一个定理：<strong>n个点值确定唯一的n-1次多项式函数</strong>。而如何确定该多项式函数？我们会使用解线性方程组的方法。<br><span id="more"></span><br>在中学阶段，我们学到的确定多项式函数的方法往往是这样的：</p>
-<ol>
-<li>已知有$n$个点，确定$n-1$次多项式函数</li>
-<li>将$n$个点分别带入形如$y=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的式子</li>
-<li>联立这些个方程，解出每一项的系数$a_{i}$</li>
-</ol>
-<h1 id="拉格朗日插值法"><a href="#拉格朗日插值法" class="headerlink" title="拉格朗日插值法"></a>拉格朗日插值法</h1><p>联立方程求解虽然很强势，但这还是太吃操作了，那有没有在计算机上更简单粗暴的办法呢？有的，兄弟，有的。拉格朗日插值法就是这样的一个方法，他不需要消元等任何复杂的操作，只需要把数往里一代就行了。</p>
-<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><p>拉格朗日插值法的核心思路也很简单粗暴：利用点值的可加性$(f+g)(x_{i})=f(x_{i})+g(x_{i})$。看上去可能不太明白在说什么，举个例子就清楚了。<br>对于一个多项式函数$f(x)=x^2$和一个多项式函数$g(x)=2x+1$，那么就有$(f+g)(x)=x^{2}+2x+1$。我们考虑他们在取值为$x=1,2,3$的时候，分别有：</p>
-<script type="math/tex; mode=display">\begin{aligned}
-&f(1,2,3)=(1,4,9)\\
-&g(1,2,3)=(3,5,7)\\
-&(f+g)(1,2,3)=(4,9,16)
-\end{aligned}</script><p>显然有$(1,4,9)+(3,5,7)=(4,9,16)$也就是$(f+g)(x_{i})=f(x_{i})+g(x_{i})$</p>
-<h2 id="思路及推导"><a href="#思路及推导" class="headerlink" title="思路及推导"></a>思路及推导</h2><p>既然可以有点值的可加性这样的性质，拉格朗日就有想法了：如果我有个多项式$f_{i}(x)$，对于每个多项式函数$f_{i}(x)$只在$x_{i}$的时候取值$y_{i}$，其他的时候取值为0（也就是$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$）。再把这个多项式函数依据点的可加性加起来，不就能得到个形如$(x_{i},y_{i})$的点所确定的多项式函数了吗？（天才的想法）</p>
-<p>于是说干就干，为了找到$f_{i}(x) = \begin{cases} y_i, &amp; x = x_i \\ 0, &amp; \text{otherwise} \end{cases}$这样的函数呢，首先我们得确保$f_{i}(x_{j})=0(i\not=j)$，所以$f_{i}(x)$应该要包含其余所有的$x-x_{j}$作为因式，我们把他们乘起来就有$g_{i}(x)=\prod_{j\not=i}(x-x_{j})$。但这个时候取值为$x_{i}$时，很明显$g_{i}(x_{i})=\prod_{j\not=i}(x_{i}-x_{j})$不一定等于$y_{i}$，所以为了让$f_{i}(x_{i})=y_{i}$我们得乘上一个$\frac{y_{i}}{g_{i}(x_{i})}$。所以：</p>
-<script type="math/tex; mode=display">f_{i}(x)=g_{i}(x)\cdot \frac{y_{i}}{g_{i}(x_{i})}=y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>最后对$f_{i}(x)$求和得到$f(x)$，也就是拉格朗日插值公式：</p>
-<script type="math/tex; mode=display">f(x)=\sum_{i=1}^{n}y_{i}\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}</script><p>如何直接获取$f(x)=a_{1}x^{n-1}+a_{2}x^{n-2}+\dots+a_{n-1}x+a_{n}$的系数呢？我们继续往下推导。首先要明确的是，每个$L_{i}(x)=\prod_{j\not=i}{\frac{x-x_{j}}{x_{i}-x_{j}}}$本质上就是一个次数为$n$的多项式，其中分母是常数，分子是$(x-x_{1})(x-x_{2})\dots(x-x_{n})$。所以可以展开成：</p>
-<script type="math/tex; mode=display">L_{i}(x)=\frac{1}{\prod_{j\not=i(x_{i}-x_{j})}}\cdot (c_{i_{1}}x^{n-1}+c_{i_{2}}x^{n-2}+\dots+c_{i_{n-1}}x+c_{i_{n}})</script><p>由$f(x)=\sum_{i=1}^{n}y_{i}L_{i}(x)$最终可知其中系数：</p>
-<script type="math/tex; mode=display">a_{k}=\sum_{i=1}^{n}{\frac{y_{i}c_{i_{k}}}{\prod_{j\not=i(x_{i}-x_{j})}}}</script><h1 id="傅立叶变换"><a href="#傅立叶变换" class="headerlink" title="傅立叶变换"></a>傅立叶变换</h1><p>拉格朗日插值法虽然好用，但是时间复杂度为$O(n^{2})$，时间复杂度说不上高，但也不低。那我们想更进一步，就得拿出我们的核心加速工具：快速傅立叶变换。快速傅里叶变换即在离散傅里叶变换基础上通过选取合适的$x_{i}$​，使得可以快速求值。</p>
-<h2 id="离散傅立叶变换-DFT"><a href="#离散傅立叶变换-DFT" class="headerlink" title="离散傅立叶变换(DFT)"></a>离散傅立叶变换(DFT)</h2><p>在介绍快速傅立叶变换前得先介绍离散傅立叶变换：在信号处理与数值计算中，<strong>离散傅立叶变换（DFT, Discrete Fourier Transform）</strong> 是一个重要工具。给定长度为$N$的序列：$x=(x_{0},x_{1},\dots,x_{N-1})$</p>
-<p>其可以通过DFT转换成另一个长度为$N$的序列：$X_{k}=\sum_{n=0}^{N-1}x_{n}\omega_{N}^{kn},k={0,1,\dots,N-1}$（其中$\omega_{N}=e^{-{\frac{2\pi i}{N}}}$即为原始$N$次单位根）</p>
-<blockquote>
-<p> 在复数中，一个复数$\omega$如果满足$\omega^{N}=1$，则称其为$N$次单位根。所有$N$次单位根可以写成$\omega_{k}=e^{\frac{2\pi k}{N}},k=0,1,\dots,N-1$。这些解在复平面上<strong>均匀分布在单位圆上</strong>，相邻两个点之间夹角为$\frac{2\pi}{N}$。</p>
-<p> 若$\omega$为$N$次单位根，并且它的幂次$\omega,\omega^{2},\dots,\omega^{N-1}$恰好能够生成所有不同的$N$次单位根，则称$\omega$为原始$N$次单位根，常用的原始单位根是$\omega_{N}=e^{ \frac{2\pi i}{N} }$</p>
-</blockquote>
-<h2 id="快速傅立叶变换-FFT"><a href="#快速傅立叶变换-FFT" class="headerlink" title="快速傅立叶变换(FFT)"></a>快速傅立叶变换(FFT)</h2><p>说回如何快速计算，考虑任意多项式$f(x)=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}$有：</p>
-<script type="math/tex; mode=display">\begin{equation*}
-\begin{aligned}
-f(x)&=a_{0}+a_{1}x+a_{2}x^{2}+\dots+a_{n-1}x^{n-1}\\
-&=a_{0}+a_{2}x^{2}+a_{4}x^{4}+\dots+a_{n-2}x^{n-2}+a_{1}x+a_{3}x^{3}+a_{5}x^{5}+\dots+a_{n-1}x^{n-1}\\
-&=f_{e}(x)+f_{o}(x)
-\end{aligned}
-\end{equation*}</script><p>根据奇偶函数的性质，不难知道$f(-x)=f_{e}(x)-f_{o}(x)$。这意味着我们在计算一组$f_{e}(x),f_{o}(x)$后可以得到有$f(x)$和$f(-x)$两个点的值，但是$f_{e}(x),f_{o}(x)$的最高次项任然是$n-2,n-1$次，计算的时间复杂度并没有降低。这就需要下面的操作。</p>
-<p>对于$f_{e}(x)=a_{0}+a_{2}x^{2}+\dots+a_{n-2}x^{n-2}$来说，我们可以通过换元令$u=x^{2}$进行压缩，变为：$f_{e}^{‘}(u)=a_{0}+a_{2}u+\dots+a_{n-2}u^{\frac{n-2}{2}}$。同样，对于$f_{o}(x)$，我们只需先提出一个$x$，也可化成相同的形式。因此有：</p>
-<script type="math/tex; mode=display">\begin{cases}
-f(x)=f_{e}^{'}(x^{2})+xf_{o}^{'}(x^{2})\\ \\
-f(-x)=f_{e}^{'}(x^{2})-xf_{o}^{'}(x^{2})
-\end{cases}</script><p>要想在计算上节省代价，我们应当选择成对的点$(x,-x)$，这样在计算的时候可以共用同一组$f_{e}^{‘}(x^{2}),f_{o}^{‘}(x^{2})$，就成功将规模压缩成了原本的一半。<br>接下来所要考虑的是如何使它能够递归下去。如果我们一开始点集是$(x_{i},-x_{i})$，平方后就有：${x_{i}}^{2}=(-x_{i})^{2}$，也就是会“合并”为更小的点集，为保证能递归下去：</p>
-<ol>
-<li>有$n$个点，他们得两两配对。</li>
-<li>平方后要得到规模减半的点，依然能配对。</li>
-<li>…</li>
-<li>一直递归$\lceil \omega=\log_{2}n \rceil$层，最后缩减到1个点。</li>
-</ol>
-<p>为了让选择的点集在平方运算下仍然落在同类的点集里，且也能两两配对，一种自然且常用的选择是：把初始点选为某个$k$-次单位根集合，且令$k=2^{\omega}$，具体则是令$\omega_{k}^{j}=e^{-{\frac{2\pi i}{k}}},x\in\{\omega_{k}^{0},\omega_{k}^{1},\dots,\omega_{k}^{k-1}\}$则有$(\omega_{k}^{j})^{2}=\omega_{\frac{k}{2}}^{j},\left( \omega_{\frac{k}{2}}^{j} \right)^{2}=\omega_{\frac{k}{4}}^{j},\dots$直到$\omega_{1}^{j}=1$。<br>这个时候我们再回头考虑成对点$(x_{i},-x_{i})$，由于其为$k$-次单位根，根据性质可以写成$\left( \omega_{k}^{j},\omega_{k}^{j+{\frac{k}{2}}} \right)$，此时有：</p>
-<script type="math/tex; mode=display">\begin{cases}
-f(\omega_{k}^{j})=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)+\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)\\ \\
-f\left( \omega_{k}^{j+\frac{k}{2}} \right)=f_{e}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)-\omega_{k}^{j}f_{o}^{'}\left( \omega_{\frac{k}{2}}^{j} \right)
-\end{cases}</script><p>这正是FFT的<strong>蝴蝶变换</strong>。每一层递归都由若干个蝴蝶组成，层层叠加，最终完成$O(n\log n)$的快速计算。</p>
-]]></content>
-      <categories>
-        <category>algorithm</category>
-      </categories>
-      <tags>
-        <tag>学习</tag>
-        <tag>Crypto</tag>
-        <tag>拉格朗日</tag>
       </tags>
   </entry>
 </search>
